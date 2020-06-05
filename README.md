@@ -2,7 +2,7 @@
 repository for EDA shiny related files
 
 # Git setup/workflow
-See [https://github.com/OSUCliMates/CliMates/blob/master/workflow.md](Charlotte's github workflow document) in our other repo to setup git remote, and to see workflow details
+See [https://github.com/OSUCliMates/CliMates/blob/master/workflow.md] in our other repo to setup git remote, and to see workflow details
 
 # Architecture
 currently, within the dataDash directory we've got
