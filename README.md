@@ -2,6 +2,7 @@
 repository for EDA shiny related files
 
 # Git setup/workflow
+
 See ![https://github.com/OSUCliMates/CliMates/blob/master/workflow.md](Charlotte's github/workflow notes) in our other repo to setup git remote, and to see workflow details
 
 # Architecture
