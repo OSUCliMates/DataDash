@@ -11,8 +11,16 @@ ui <- fluidPage(
               tabPanel("what is this?",
                        p("The layout for the app right now is using tabsetPanel. Inside each tabPanel function is its own little page where you can put content")),
               
-              tabPanel("smither8"
-                       #Ericka put  the stuff you're working on in here
+              tabPanel("smither8",
+                       titlePanel("Choose an Area of Interest"),
+                       sidebarLayout(
+                         sidebarPanel(
+                           helpText("Use your cursor to select a rectangle on the map. \n "),
+                           plotOutput("shp_map", hover = "hov", brush= "brus"),
+                           tableOutput("hov_info")),
+                         mainPanel(
+                           tableOutput("brus_info"),
+                           plotOutput("insert_any_plot")))
               ),
               
               tabPanel("Jeffica"
