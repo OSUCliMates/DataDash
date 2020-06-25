@@ -77,14 +77,84 @@ server <- function(input, output) {
         geom_point(aes(x=Longitude, y=Latitude))
     }
     )
-<<<<<<< HEAD
+
     
     
     # JessRoseRobbieJo
+    VarPlotData <- reactive({
+      brushedPoints(BigDF, input$selection1) %>%
+        filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
+        group_by(Year, Month) %>%
+        summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
+        group_by(Year) %>%
+        summarise(varTotPrecip = var(TotMoPrecip))})
     
+    TotPlotsData <- reactive({
+      brushedPoints(BigDF, input$selection1) %>%
+        filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
+        group_by(Year) %>%
+        summarise(TotYrPrecip=sum(PREC)) %>%
+        mutate(CumuPrecip = cumsum(TotYrPrecip))}) %>%
+      debounce(2000)
     
-=======
-
->>>>>>> upstream/master
+    xAxisTicks <- reactive({
+      
+      # If number of years plotted is odd, the last label will occur before the last plotted point, so
+      # add two to the final year displayed
+      if ((input$Year[2] - input$Year[1]) %% 2 > 0) {
+        max_year <- input$Year[2] + 2
+      } 
+      else {
+        max_year <- input$Year[2]
+      }
+      
+      # If over 10 years plotted, only label at every other break
+      if ((input$Year[2]-input$Year[1]) > 10) {
+        breaks <- seq(from = input$Year[1],
+                      to = max_year,        
+                      by = 2)
+      } else {
+        breaks <- seq(from = input$Year[1],
+                      to = max_year,         
+                      by = 1)
+      }
+    })
+    
+    output$mPlot <- renderPlot({
+      ggplot(toMap)+
+        geom_point(aes(x=lon2, y=lat), color="red", alpha=0.25)+
+        borders("state", size=1)+
+        xlab("Longitude")+
+        ylab("Latitude")+
+        theme(text = element_text(size=20))
+    })
+    
+    output$VarPlot <- renderPlot({
+      VarPlotData()
+      xAxisTicks()
+      ggplot(VarPlotData())+
+        geom_line(aes(x=Year, y=varTotPrecip))+
+        labs(y="Variance in Total Monthly Precipitation (m)")+
+        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+        theme(text = element_text(size=19))
+    })
+    
+    output$TotPlot <- renderPlot({
+      TotPlotsData()
+      ggplot(TotPlotsData())+
+        geom_line(aes(x=Year, y=TotYrPrecip), group=1, size=0.8)+
+        labs(y="Total yearly precipitation (m)")+
+        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+        theme(text = element_text(size=20))
+    })
+    
+    output$CumuPlot <- renderPlot({
+      ggplot(TotPlotsData())+
+        geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
+        labs(y="Cumulative precipitation (m)")+
+        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+        theme(text = element_text(size=20))
+    })
+    
 }
 

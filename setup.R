@@ -12,6 +12,8 @@ OR_shpfile <- "oregon_boundary/or_state_boundary.shp"
 
 #setup for reference plot
 us <- map_data("state")
+BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds")  #JRR
+toMap <- distinct(BigDF, lat, lon2)  #JRR
 
 #initialize vars (probably should be elsewhere?)
 shp_file_s8 <- st_read("oregon_boundary/or_state_boundary.shp") %>% 
