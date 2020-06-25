@@ -42,7 +42,28 @@ ui <- fluidPage(
                            plotOutput("insert_any_plot")))
               ),
               
-              tabPanel("Jeffica"
+              tabPanel("Jeffica",
+                       titlePanel("Precipitation in Oregon - Quadrant/Year Comparison Tool"),
+                       
+                       sidebarLayout(
+                         sidebarPanel(
+                           # Slider for range of years
+                           div(style="font-size:20px;",
+                               sliderInput(inputId = "Year", label="Years of interest", min=1979, max=2017, value=c(1979, 1985), sep=""))
+                         ),
+                         mainPanel(
+                           tags$h3("ERA Interim Station Locations"),
+                           plotOutput(outputId = "mPlot", brush="selection1", width="80%")
+                         )),
+                       
+                       tags$h3("Total yearly precipitation"),
+                       plotOutput(outputId = "TotPlot"),
+                       
+                       tags$h3("Cumulative yearly precipitation"),
+                       plotOutput(outputId = "CumuPlot"),
+                       
+                       tags$h3("Variability of total monthly precipitation by year"),
+                       plotOutput(outputId = "VarPlot")
                        #Jess put  the stuff you're working on in here
               ),
               
