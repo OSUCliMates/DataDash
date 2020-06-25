@@ -44,9 +44,9 @@ add_cumsum <- function(x){
 sawtooth <- function(lat_val,lon_val){
   precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
   
-
   
-tibble1 <-  tidync(precfile)%>%
+  
+  tibble1 <-  tidync(precfile)%>%
     hyper_filter(
       lat = lat==lat_val,
       lon = lon==lon_val
@@ -58,23 +58,24 @@ tibble1 <-  tidync(precfile)%>%
     mutate(year = (time-min(time))%/%365+1920)%>%
     mutate(water_year = map2_dbl(.x=year, .y=calendar_date, .f=conv_to_water_year))%>%
     mutate(water_day = map_dbl(.x=calendar_date,.f=conv_to_water_day))
-
-tibble2 <- tibble1%>%
+  
+  tibble2 <- tibble1%>%
     group_by(water_year) %>%
     nest()
   
-tibble2$data%>%
-  map(.f=add_cumsum)%>%
-  enframe()%>%
-  unnest()%>%
-  select(-name)%>%
-  mutate(water_year = tibble1$water_year)%>%
-  mutate(time=tibble1$time)%>%
-  select(water_year,water_day,cumulative_precip)
+  tibble2$data%>%
+    map(.f=add_cumsum)%>%
+    enframe()%>%
+    unnest()%>%
+    select(-name)%>%
+    mutate(water_year = tibble1$water_year)%>%
+    mutate(time=tibble1$time)%>%
+    select(water_year,water_day,cumulative_precip)
 }
 
 agg_sawtooth <- function(x){
-x%>%
+  x%>%
+    filter(water_year>1920)%>% #We need to remove this year since we don't have the first few months
     mutate(decade = (water_year%/%10)*10)%>%
     group_by(water_day,decade)%>%
     summarise(avg_cumulative_prec = mean(cumulative_precip,na.rm = TRUE))
@@ -96,5 +97,5 @@ grid <- expand.grid(latitude=latitudes,longitude=longitudes)
 nest(grid,data=NULL)%>%
   mutate(data=map2(.x=latitude,.y=longitude,.f=sawtooth_combined))%>%
   unnest()%>%
-  write_csv("decadal_average_cumulative_prec_waveforms.csv")
+  saveRDS(file="/home/ST505/precalculated_data/yearly_cumulative_prec.rds")
 
