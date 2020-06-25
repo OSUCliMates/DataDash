@@ -3,9 +3,26 @@ source("setup.R", local = FALSE)
 source("setup_plot_sawtooth.R", local=FALSE)
 
 ui <- fluidPage(
-  
   titlePanel("Data Dashboard for ASA ENVR Section Data Challenge"),
   
+  
+  sidebarLayout(
+    # Side bar for selection choices 
+    sidebarPanel(
+      # perhaps include a checkbox ERA/CESMLENS dataset here?
+      selectInput(inputId = "state",
+                  label = "Choose a state to zoom in",
+                  choices = state.name),
+      actionButton(inputId = "zoom_in",
+                   label = "Zoom in"),
+      actionButton(inputId = "zoom_out",
+                   label = "Zoom out"),
+      actionButton(inputId = "reset",
+                   label = "Reset Zoom"),
+      plotOutput(outputId = "point_selection_map", 
+                 brush = "plot_brush")
+      ),
+    mainPanel(
   # Output: Tabset
   # Different tabs where we can put our stuff. 
   tabsetPanel(type = "tabs",
@@ -33,22 +50,19 @@ ui <- fluidPage(
                        #Emily put  the stuff you're working on in here
               ),
               
-              tabPanel("K8",
-                       #stay cool chief
-                       sidebarLayout(
-                         sidebarPanel(
-                           sliderInput("lat", label = h3("Latitude"), min = 24, 
-                                       max = 50, value = c(41,47)),
-                           sliderInput("lon", label = h3("Longitude"), min = -125, 
-                                       max = -66, value = c(-125,-116)),
-                           
-                         ),
-                         mainPanel(
-                           plotOutput("sawtooth"),
-                           plotOutput("ref_map")
-                         )
+              tabPanel("K8",#stay cool chief
+                       #sliderInput("lat", label = h3("Latitude"), min = 24, 
+                       #                 max = 50, value = c(41,47)),
+                       #sliderInput("lon", label = h3("Longitude"), min = -125, 
+                      #                 max = -66, value = c(-125,-116)),
+                       plotOutput("sawtooth"),
+                       plotOutput("ref_map")
                        )
               )
-              
+    )
   )
 )
+
+
+
+
