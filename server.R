@@ -103,7 +103,7 @@ server <- function(input, output) {
     ## MLE 
     
     
-    location_points <- read.csv("~/CliMates/Output/lat_lon_pairs.csv")
+    location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
     
     zoom_val <- reactiveVal(0)       # rv <- reactiveValues(value = 0)
     
