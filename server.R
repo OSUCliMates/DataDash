@@ -1,5 +1,6 @@
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+
   
   # K8 I think
     output$sawtooth <- renderPlot({
@@ -18,11 +19,11 @@ server <- function(input, output) {
                   min_lat = min(lat),
                   max_lat = max(lat)) %>% 
         as_vector()
-      a <- max_mins[3]
-      b <- max_mins[4]
-      c <- max_mins[1]%%360
-      d <- max_mins[2]%%360
-      plot_sawtooths(a,b,c,d)
+      min_lat <- max_mins[3]
+      max_lat <- max_mins[4]
+      min_lon <- max_mins[1]%%360
+      max_lon <- max_mins[2]%%360
+      plot_sawtooths(min_lat,max_lat,min_lon,max_lon)
 
     })
     
