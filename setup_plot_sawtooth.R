@@ -15,7 +15,7 @@ longitudes <- unique(gbg$lon)
 remove(gbg)
 
 #This function needs the following data frame to run:
-decadal_average_cumulative_prec_waveforms <- read_csv("decadal_average_cumulative_prec_waveforms.csv")
+decadal_average_cumulative_prec_waveforms <- readRDS("/home/ST505/precalculated_data/yearly_cumulative_prec.rds")
 
 #use ggplot to make an error message
 err_plot <- ggplot()+
@@ -28,20 +28,20 @@ c <- longitudes[24]
 d <- longitudes[26]
 
 plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
-dat <- decadal_average_cumulative_prec_waveforms%>%
-  filter(latitude>=lat_min&latitude<=lat_max)%>%
-  filter(longitude>=lon_min&longitude<=lon_max)
-ndat <- dat%>%
-  select(avg_cumulative_prec)%>%
-  summarise(n=n())%>%
-  as.numeric()
-
-if(ndat==0){err_plot}
-else{
-  dat%>%
-    group_by(water_day,decade)%>%
-    summarise(cum_prec = mean(avg_cumulative_prec))%>%
-    ggplot()+
-    geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))
-}
+  dat <- decadal_average_cumulative_prec_waveforms%>%
+    filter(latitude>=lat_min&latitude<=lat_max)%>%
+    filter(longitude>=lon_min&longitude<=lon_max)
+  ndat <- dat%>%
+    select(avg_cumulative_prec)%>%
+    summarise(n=n())%>%
+    as.numeric()
+  
+  if(ndat==0){err_plot}
+  else{
+    dat%>%
+      group_by(water_day,decade)%>%
+      summarise(cum_prec = mean(avg_cumulative_prec))%>%
+      ggplot()+
+      geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))
+  }
 }

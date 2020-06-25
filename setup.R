@@ -10,9 +10,6 @@ library(sf)
 LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
 OR_shpfile <- "oregon_boundary/or_state_boundary.shp"
 
-#source function for plotting sawtooth waveforms
-source("setup_plot_sawtooth.R",local=TRUE)
-
 #setup for reference plot
 us <- map_data("state")
 

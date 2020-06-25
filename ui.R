@@ -1,4 +1,6 @@
-source("setup.R", local = TRUE)
+#source setup files
+source("setup.R", local = FALSE)
+source("setup_plot_sawtooth.R", local=FALSE)
 
 ui <- fluidPage(
   
