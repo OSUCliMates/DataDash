@@ -1,15 +1,6 @@
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-  output$sawtooth <- renderPlot({
-    a <- input$lat[1]
-    b <- input$lat[2]
-    c <- input$lon[1]%%360
-    d <- input$lon[2]%%360
-    
-    plot_sawtooths(a,b,c,d)
-  })
-  
   output$ref_map <- renderPlot({
     ggplot(us, aes(x = long, y = lat, group = group)) +
       geom_polygon(fill="lightgray", colour = "black")+
@@ -25,12 +16,12 @@ server <- function(input, output) {
   
   # K8 I think
     output$sawtooth <- renderPlot({
-      a <- input$lat[1]
-      b <- input$lat[2]
-      c <- input$lon[1]%%360
-      d <- input$lon[2]%%360
+      min_lat <- input$lat[1]
+      max_lat <- input$lat[2]
+      min_lon <- input$lon[1]%%360
+      max_lon <- input$lon[2]%%360
       
-      plot_sawtooths(a,b,c,d)
+      plot_sawtooths(min_lat,max_lat,min_lon,max_lon )
     })
     
     output$ref_map <- renderPlot({
