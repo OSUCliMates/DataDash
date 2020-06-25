@@ -1,6 +1,6 @@
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-<<<<<<< HEAD
+
   output$sawtooth <- renderPlot({
     a <- input$lat[1]
     b <- input$lat[2]
@@ -22,7 +22,7 @@ server <- function(input, output) {
       )
     
   })
-=======
+  
   # K8 I think
     output$sawtooth <- renderPlot({
       a <- input$lat[1]
@@ -77,6 +77,6 @@ server <- function(input, output) {
         geom_point(aes(x=Longitude, y=Latitude))
     }
     )
->>>>>>> 9bd6fa2f848f8da0e984d88b822caa2410c909e3
+
 }
 
