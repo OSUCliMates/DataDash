@@ -102,11 +102,12 @@ server <- function(input, output) {
     
     ####################################################
     ## MLE 
+
     ############ Stuff for filtering map
     # read in list of ERA and CESM unique loation lat/long pairs
     location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
     #initialize zoom 
-    zoom_val <- reactiveVal(0)       
+    zoom_val <- reactiveVal(0)       # rv <- reactiveValues(value = 0)
     # Change the zoom button depending on how zoomed in we are
     observeEvent(input$zoom_in, {
       newValue <- ifelse(zoom_val()-1 < 0,zoom_val()-.2, zoom_val()-1 )
