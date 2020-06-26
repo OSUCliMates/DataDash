@@ -21,3 +21,13 @@ shp_file_s8 <- st_read("oregon_boundary/or_state_boundary.shp") %>%
 hov_df <- data.frame(x=0, y=0)
 hov_df <- c("Cursor Longitude", "Cursor Latitude")
 extent_df <- data.frame(Longitude=c(0,0), Latitude=c(0,0))
+
+#function for finding numeric derivative
+nderiv <- function(x){
+  y<-numeric(length=length(x$cum_prec))
+  y[1] <- 0
+  for(i in 2:length(x$cum_prec)){
+    y[i]<- x$cum_prec[i]-x$cum_prec[i-1]
+  }
+  y
+}

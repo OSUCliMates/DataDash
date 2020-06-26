@@ -77,7 +77,7 @@ ui <- fluidPage(
                        #sliderInput("lon", label = h3("Longitude"), min = -125, 
                       #                 max = -66, value = c(-125,-116)),
                        plotOutput("sawtooth"),
-                       plotOutput("ref_map")
+                       #plotOutput("ref_map")
                        )
               )
     )
