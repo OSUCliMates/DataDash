@@ -12,7 +12,8 @@ ui <- fluidPage(
       # perhaps include a checkbox ERA/CESMLENS dataset here?
       selectInput(inputId = "state",
                   label = "Choose a state to zoom in",
-                  choices = state.name),
+                  choices = c("United States",state.name),
+                  selected = "Oregon"),
       actionButton(inputId = "zoom_in",
                    label = "Zoom in"),
       actionButton(inputId = "zoom_out",
@@ -67,8 +68,10 @@ ui <- fluidPage(
                        #Jess put  the stuff you're working on in here
               ),
               
-              tabPanel("MLE"
+              tabPanel("MLE",
                        #Emily put  the stuff you're working on in here
+                       plotOutput(outputId = "precip_deviation_plot"),
+                       plotOutput(outputId = "precip_strips")
               ),
               
               tabPanel("K8",#stay cool chief

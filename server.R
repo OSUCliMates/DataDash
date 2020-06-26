@@ -99,68 +99,163 @@ server <- function(input, output) {
     
     
     
-    
+    ####################################################
     ## MLE 
-    
-    
+    ############ Stuff for filtering map
+    # read in list of ERA and CESM unique loation lat/long pairs
     location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
-    
-    zoom_val <- reactiveVal(0)       # rv <- reactiveValues(value = 0)
-    
+    #initialize zoom 
+    zoom_val <- reactiveVal(0)       
+    # Change the zoom button depending on how zoomed in we are
     observeEvent(input$zoom_in, {
-      if(zoom_val() -1 < 0){
-        newValue <- zoom_val() - .1
-      }
-      else{
-        newValue <- zoom_val()-1
+      newValue <- ifelse(zoom_val()-1 < 0,zoom_val()-.2, zoom_val()-1 )
+      if(input$state == "United States"){
+        newValue <- zoom_val()-10
       }
       zoom_val(newValue)
     })
-    
     observeEvent(input$zoom_out, {
-      if(zoom_val() < 0){
-        newValue <- zoom_val()+.1
+      newValue <- ifelse(zoom_val() < 0, zoom_val()+.2, zoom_val()+1)
+      if(input$state == "United States"){
+        newValue <- zoom_val()+10
       }
-      else{
-        newValue <- zoom_val() + 1
-      } 
       zoom_val(newValue) 
     })
+    #reset the zoom button
     observeEvent(input$state,{
       zoom_val(0)
     })
+    # also resets the zoom button
     observeEvent(input$reset,{
       zoom_val(0)
     })
+    # reactive bounding values to use for filtering 
     bounding <- reactive({
-      state_map <- map_data("state",region = input$state)
-      list(lon_range = c(max(-136.5,min(state_map$long)-zoom_val()),
+      # Zoom at larger scale if in US
+      if(input$state == "United States"){
+        list(lon_range = c(max(-136.5,-136.51-zoom_val()),
+                           min(-58.5,-58.5+zoom_val())),
+             lat_range = c(max(17.25,17.25-zoom_val()),
+                           min(55.5,55.5+zoom_val())))
+      }else{
+        state_map <- map_data("state",region = input$state)
+        list(lon_range = c(max(-136.5,min(state_map$long)-zoom_val()),
                          min(-58.5,max(state_map$long)+zoom_val())),
-           lat_range = c(max(17.25,min(state_map$lat)-zoom_val()),
+             lat_range = c(max(17.25,min(state_map$lat)-zoom_val()),
                          min(55.5,max(state_map$lat)+zoom_val())))
+      }
     })
     
     output$point_selection_map <- renderPlot({
       mapdata <- map_data("state")
-      if(zoom_val()<0){
+      pointsize <- 2
+      if(zoom_val() < 0 & input$state != "United States"){
         mapdata <- map_data("county")
+        pointsize <- 3
+      }
+      if(input$state == "United States"){
+        pointsize = .1
       }
       ggplot() + 
         geom_polygon(data = mapdata,
                      aes(x=long,y=lat,group=group), fill = NA, color = "black")+
         geom_point(data = location_points, 
-                   aes(x = lon, y = lat,color = dataset)) +
-        coord_cartesian(xlim = bounding()$lon_range,
-                        ylim = bounding()$lat_range)
+                   aes(x = lon, y = lat,color = dataset),
+                   size = pointsize) +
+        #coord_cartesian(xlim = bounding()$lon_range,
+        #                ylim = bounding()$lat_range) +
+        coord_quickmap(xlim = bounding()$lon_range,
+                                        ylim = bounding()$lat_range) +
+        labs(color = "Dataset",
+             title = "Station/Observation Locations") +
+        theme(axis.text = element_blank(),
+              axis.text.y = element_blank(),
+              axis.title = element_blank()
+              )
+    })
+
+    ####################################################
+    ## MLE 
+    ############ Stuff for plot 
+    
+    selected_points <- reactive({
+      brushedPoints(location_points,
+                    input$plot_brush,
+                    xvar = "lon",yvar = "lat") %>% 
+        group_by(dataset) %>% 
+        summarize(min_lon = min(lon),
+                  max_lon = max(lon),
+                  min_lat = min(lat),
+                  max_lat = max(lat))
     })
     
-
-    # need to figure out good error message if nothing selected? 
-    max_min_locations <- reactiveValues(min_lat = 41, 
-                                        max_lat = 47,
-                                        min_lon = -125,
-                                        max_lon = -116)
+    mles_data <- reactive({
+      era_points <- selected_points() %>%
+        filter(dataset == "era") 
+      precip_deviation %>% 
+        filter(between(lon,
+                       era_points$min_lon,
+                       era_points$max_lon),
+               between(lat,
+                       era_points$min_lat,
+                       era_points$max_lat)) %>% 
+        group_by(month_date) %>% 
+        summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
+        mutate(month = lubridate::month(month_date,label = T))
+    })
     
+    output$precip_deviation_plot <- renderPlot({
+      
+      n_rows <- mles_data() %>%
+        select(month) %>% 
+          summarize(n = n()) %>% as.numeric()
+      
+      
+      if(n_rows ==0){return(err_plot)}
+      
+      mles_data() %>%
+        ggplot() +
+        geom_line(aes(x = as.Date(month_date), y = mean_deviation,
+                      group = month,
+                      color = month))+
+        geom_hline(yintercept = 0) +
+        scale_x_date() +
+        scale_y_continuous(breaks = c(-.005,0,.005))+
+        facet_wrap(~month) + 
+        theme(legend.position = "none")+
+        labs(title = "What months are most variable in rainfall?",
+             x = "",
+             y = "Difference from Average Monthly Rainfall")
+      
+    })
+    
+    output$precip_strips <- renderPlot({
+      n_rows <- mles_data() %>%
+        select(month) %>% 
+        summarize(n = n()) %>% as.numeric()
+      
+      
+      if(n_rows ==0){return(err_plot)}
+      
+      
+      mles_data() %>%
+      ggplot() +
+        geom_tile(aes(x = as.Date(month_date), y = 1,fill = mean_deviation))+
+        scale_fill_continuous_diverging(palette = "Green-Brown")+
+        scale_x_date() + 
+        labs(x = "",y = "")+
+        theme(legend.position = "none",
+              axis.text.y = element_blank(),
+              axis.ticks.y = element_blank())
+    })
+    
+    
+    
+    
+    
+    
+    #### End MLE's stuff
+    ####################################################
 
     
     
