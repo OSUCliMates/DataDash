@@ -22,12 +22,13 @@ err_plot <- ggplot()+
   annotate(geom="text",y=1,x=1,label="Oops! It looks like there weren't any raster pixels in your window. Please try a larger window.")+
   theme_void()
 
-a <- latitudes[6]
-b <- latitudes[8]
-c <- longitudes[24]
-d <- longitudes[26]
+lat_min <- latitudes[6]
+lat_max <- latitudes[8]
+lon_min <- longitudes[24]
+lon_max <- longitudes[26]
 
 plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
+  #first we check to see that there were raster points selected
   dat <- decadal_average_cumulative_prec_waveforms%>%
     filter(latitude>=lat_min&latitude<=lat_max)%>%
     filter(longitude>=lon_min&longitude<=lon_max)
@@ -36,12 +37,30 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
     summarise(n=n())%>%
     as.numeric()
   
-  if(ndat==0){err_plot}
-  else{
-    dat%>%
+
+  
+  #After checking to make sure that there were raster points selected, this code runs
+  if(ndat==0){err_plot}else{
+    #generate cumulative rainfall (sawtooth) aggregate plots
+    p1 <- dat%>%
       group_by(water_day,decade)%>%
       summarise(cum_prec = mean(avg_cumulative_prec))%>%
       ggplot()+
-      geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))
+      geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))+
+      scale_color_discrete_sequential(palette = "viridis")
+      
+    #generate numeric derivative of the above plot
+    p2 <- dat%>%
+      group_by(water_day,decade)%>%
+      summarise(cum_prec = mean(avg_cumulative_prec))%>%
+      group_by(decade)%>%
+      nest()%>%
+      mutate(agg_prec=map(data,nderiv))%>%
+      unnest()%>%
+      ggplot()+
+      geom_line(aes(x=water_day,y=agg_prec,color=as.factor(decade)))+
+      scale_color_discrete_sequential(palette = "viridis")
+    
+    grid.arrange(p1,p2,nrow=2)
   }
 }

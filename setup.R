@@ -22,9 +22,21 @@ hov_df <- data.frame(x=0, y=0)
 hov_df <- c("Cursor Longitude", "Cursor Latitude")
 extent_df <- data.frame(Longitude=c(0,0), Latitude=c(0,0))
 
+<<<<<<< HEAD
 # MLE precip deviation 
 precip_deviation <- readRDS("/home/ST505/precalculated_data/era_precip_deviation.rds")
 
 location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
 
 
+=======
+#function for finding numeric derivative
+nderiv <- function(x){
+  y<-numeric(length=length(x$cum_prec))
+  y[1] <- 0
+  for(i in 2:length(x$cum_prec)){
+    y[i]<- x$cum_prec[i]-x$cum_prec[i-1]
+  }
+  y
+}
+>>>>>>> upstream/master
