@@ -27,30 +27,31 @@ server <- function(input, output) {
 
     })
     
-    output$ref_map <- renderPlot({
-      
-      max_mins <- brushedPoints(location_points,
-                                input$plot_brush,
-                                xvar = "lon",yvar = "lat") %>% 
-        filter(dataset == "lens") %>% 
-        summarize(min_lon = min(lon),
-                  max_lon = max(lon),
-                  min_lat = min(lat),
-                  max_lat = max(lat))
-      a <- max_mins[1,3]
-      b <- max_mins[1,4]
-      c <- max_mins[1,1]
-      d <- max_mins[1,2]
-      
-      ggplot(us, aes(x = long, y = lat, group = group)) +
-        geom_polygon(fill="lightgray", colour = "black")+
-        geom_rect(aes(xmin=c,
-                      xmax=d,
-                      ymin=a,
-                      ymax=b),
-                  fill="darkorchid2",
-                  alpha=0.01
-        )
+    #I'M COMMENTING THIS OUT SINCE IT'S REDUNDANT AT THIS POINT 
+    #output$ref_map <- renderPlot({
+    #   
+    #   max_mins <- brushedPoints(location_points,
+    #                             input$plot_brush,
+    #                             xvar = "lon",yvar = "lat") %>% 
+    #     filter(dataset == "lens") %>% 
+    #     summarize(min_lon = min(lon),
+    #               max_lon = max(lon),
+    #               min_lat = min(lat),
+    #               max_lat = max(lat))
+    #   a <- max_mins[1,3]
+    #   b <- max_mins[1,4]
+    #   c <- max_mins[1,1]
+    #   d <- max_mins[1,2]
+    #   
+    #   ggplot(us, aes(x = long, y = lat, group = group)) +
+    #     geom_polygon(fill="lightgray", colour = "black")+
+    #     geom_rect(aes(xmin=c,
+    #                   xmax=d,
+    #                   ymin=a,
+    #                   ymax=b),
+    #               fill="darkorchid2",
+    #               alpha=0.01
+    #     )
       
       
       #ggplot(us, aes(x = long, y = lat, group = group)) +

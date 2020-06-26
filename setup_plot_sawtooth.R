@@ -42,6 +42,7 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
       group_by(water_day,decade)%>%
       summarise(cum_prec = mean(avg_cumulative_prec))%>%
       ggplot()+
-      geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))
+      geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))+
+      scale_color_discrete_sequential(palette = "viridis")
   }
 }
