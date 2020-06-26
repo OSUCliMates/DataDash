@@ -27,4 +27,13 @@ precip_deviation <- readRDS("/home/ST505/precalculated_data/era_precip_deviation
 
 location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
 
+#function for finding numeric derivative
+nderiv <- function(x){
+  y<-numeric(length=length(x$cum_prec))
+  y[1] <- 0
+  for(i in 2:length(x$cum_prec)){
+    y[i]<- x$cum_prec[i]-x$cum_prec[i-1]
+  }
+  y
+}
 
