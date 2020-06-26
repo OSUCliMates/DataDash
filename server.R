@@ -64,7 +64,7 @@ server <- function(input, output) {
       #            alpha=0.01
       #            )
       
-    })
+      #})
     # smither8
     output$shp_map <- renderPlot({ #shapefile 
       plot(shp_file_s8$geometry)
