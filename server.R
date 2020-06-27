@@ -3,12 +3,24 @@ server <- function(input, output) {
 
   
   # K8 I think
+    
+    #first plot
     output$sawtooth <- renderPlot({
       plot_sawtooths(selected_points()$min_lat[2], # second entry is for lens
                      selected_points()$max_lat[2],
                      selected_points()$min_lon[2] %% 360,
                      selected_points()$max_lon[2] %% 360)
 
+    })
+    
+    #second plot
+    output$comp_sawtooth <- renderPlot({
+      plot_sawtooths(
+        selected_points_compare()$min_lat[2], # second entry is for lens
+        selected_points_compare()$max_lat[2],
+        selected_points_compare()$min_lon[2] %% 360,
+        selected_points_compare()$max_lon[2] %% 360)
+    
     })
     
     #I'M COMMENTING THIS OUT SINCE IT'S REDUNDANT AT THIS POINT 
