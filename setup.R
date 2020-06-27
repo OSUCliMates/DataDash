@@ -25,7 +25,7 @@ extent_df <- data.frame(Longitude=c(0,0), Latitude=c(0,0))
 
 # MLE precip deviation 
 precip_deviation <- readRDS("/home/ST505/precalculated_data/era_precip_deviation.rds")
-
+# read in list of ERA and CESM unique loation lat/long pairs
 location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
 
 #function for finding numeric derivative
