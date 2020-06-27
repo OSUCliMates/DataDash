@@ -31,6 +31,15 @@ map_bounds <- function(state,current_zoom){
 # the location_points should already be read in I believe
 #location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
 plot_brushed_map <- function(state, current_zoom, bounding_box){
+    if(state == "Hawaii" | state == "Alaska"){
+        return(ggplot()+
+            annotate(geom="text",y=1,x=1,
+                     label="Oops! This state is not included in our dataset. Please select another.")+
+            theme_void()
+        )
+    }
+    
+    
     mapdata <- map_data("state")
     pointsize <- 2
     if(current_zoom < 0 & state != "United States"){
@@ -55,3 +64,28 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
               axis.ticks = element_blank()
         )
 }
+
+
+
+get_precip_deviation_data <- function(selected_points, data_choice){
+    precip_deviation %>% 
+        filter(between(lon,
+                       selected_points$min_lon[1], # first entry is era, second is lens
+                       selected_points$max_lon[1]),
+               between(lat,
+                       selected_points$min_lat[1],
+                       selected_points$max_lat[1])) %>% 
+        group_by(month_date) %>% 
+        summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
+        mutate(month = lubridate::month(month_date,label = T),
+               data_choice = data_choice)
+}
+
+
+
+
+
+
+
+
+

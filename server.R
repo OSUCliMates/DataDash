@@ -174,64 +174,68 @@ server <- function(input, output) {
                   max_lat = max(lat))
     })
     
+    is_empty <- reactive({
+      nrows <- selected_points() %>%
+        select(min_lat) %>% 
+        summarize(n = n()) %>%
+        as.numeric()
+      ifelse(nrows == 0, TRUE, FALSE)
+    })
+    
+    is_comparison_empty <- reactive({
+      if(!input$comparison_checkbox){return(FALSE)}
+      nrows <- selected_points_compare() %>%
+        select(min_lat) %>% 
+        summarize(n = n()) %>%
+        as.numeric()
+      ifelse(nrows == 0, TRUE, FALSE)
+    })
+    
 
     ####################################################
     ## MLE 
-    ############ Stuff for plot 
+    ############ Data for plot 
     
-    mles_data <- reactive({
-      era_points <- selected_points() %>%
-        filter(dataset == "era") 
-      precip_deviation %>% 
-        filter(between(lon,
-                       era_points$min_lon,
-                       era_points$max_lon),
-               between(lat,
-                       era_points$min_lat,
-                       era_points$max_lat)) %>% 
-        group_by(month_date) %>% 
-        summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
-        mutate(month = lubridate::month(month_date,label = T))
+    precip_deviation_data <- reactive({
+      if(!is_comparison_empty()){
+        rbind(
+          get_precip_deviation_data(selected_points(),data_choice="Selection 1"),
+          get_precip_deviation_data(selected_points_compare(),data_choice="Selection 2")
+        )
+      }else{
+        get_precip_deviation_data(selected_points(),data_choice="Selection 1")
+      }
     })
     
     output$precip_deviation_plot <- renderPlot({
+      if(is_empty()){return(err_plot)}
       
-      n_rows <- mles_data() %>%
-        select(month) %>% 
-          summarize(n = n()) %>% as.numeric()
-      if(n_rows ==0){return(err_plot)}
-      
-      mles_data() %>%
+      precip_deviation_data() %>%
         ggplot() +
+        geom_hline(yintercept = 0,linetype = "dashed") +
         geom_line(aes(x = as.Date(month_date), y = mean_deviation,
-                      group = month,
-                      color = month))+
-        geom_hline(yintercept = 0) +
+                      group = data_choice,
+                      color = data_choice))+
         scale_x_date() +
         scale_y_continuous(breaks = c(-.005,0,.005))+
         facet_wrap(~month) + 
         theme(legend.position = "none")+
-        labs(title = "What months are most variable in rainfall?",
+        labs(#title = "What months are most variable in rainfall?",
              x = "",
-             y = "Difference from Average Monthly Rainfall")
+             title = "Difference from Average Monthly Rainfall",
+             y = expression(dryer %<->% wetter))
       
     })
     
     output$precip_strips <- renderPlot({
-      n_rows <- mles_data() %>%
-        select(month) %>% 
-        summarize(n = n()) %>% as.numeric()
-      
-      
-      if(n_rows ==0){return(err_plot)}
-      
-      
-      mles_data() %>%
+      if(is_empty()){return(err_plot)}
+
+      precip_deviation_data() %>%
       ggplot() +
         geom_tile(aes(x = as.Date(month_date), y = 1,fill = mean_deviation))+
         scale_fill_continuous_diverging(palette = "Green-Brown")+
         scale_x_date() + 
-        labs(x = "",y = "")+
+        labs(x = "",y = expression(dryer %<->% wetter))+
         theme(legend.position = "none",
               axis.text.y = element_blank(),
               axis.ticks.y = element_blank())
