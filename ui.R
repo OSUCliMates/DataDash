@@ -1,7 +1,7 @@
 #source setup files
 source("setup.R", local = FALSE)
 source("setup_plot_sawtooth.R", local=FALSE)
-
+source("setup_plot_maps.R", local=FALSE)
 ui <- fluidPage(
   titlePanel("Data Dashboard for ASA ENVR Section Data Challenge"),
   
@@ -21,7 +21,31 @@ ui <- fluidPage(
       actionButton(inputId = "reset",
                    label = "Reset Zoom"),
       plotOutput(outputId = "point_selection_map", 
-                 brush = "plot_brush")
+                 brush = "plot_brush"),
+      
+      # following is for the comparison map
+      checkboxInput(inputId = "comparison_checkbox",
+                    label = "Compare to a different location"),
+      # Wow conditional panels are handy 
+      conditionalPanel(
+        condition = "input.comparison_checkbox == true",
+        selectInput(inputId = "comparison_state",
+                    label = "Choose a state to zoom in",
+                    choices = c("United States",state.name),
+                    selected = "Oregon"),
+        actionButton(inputId = "zoom_in2",
+                     label = "Zoom in"),
+                        actionButton(inputId = "zoom_out2",
+                                     label = "Zoom out"),
+                        actionButton(inputId = "reset2",
+                                     label = "Reset Zoom"),
+        plotOutput(outputId = "comparison_point_selection_map",
+                   brush = "plot_brush2")
+      ),
+
+
+      
+      
       ),
     mainPanel(
   # Output: Tabset

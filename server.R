@@ -4,26 +4,10 @@ server <- function(input, output) {
   
   # K8 I think
     output$sawtooth <- renderPlot({
-      #a <- input$lat[1]
-      #b <- input$lat[2]
-      #c <- input$lon[1]%%360
-      #d <- input$lon[2]%%360
-      # figure out what to do if inf 
-      
-      max_mins <- brushedPoints(location_points,
-                                input$plot_brush,
-                                xvar = "lon",yvar = "lat") %>% 
-        filter(dataset == "lens") %>% 
-        summarize(min_lon = min(lon),
-                  max_lon = max(lon),
-                  min_lat = min(lat),
-                  max_lat = max(lat)) %>% 
-        as_vector()
-      min_lat <- max_mins[3]
-      max_lat <- max_mins[4]
-      min_lon <- max_mins[1]%%360
-      max_lon <- max_mins[2]%%360
-      plot_sawtooths(min_lat,max_lat,min_lon,max_lon)
+      plot_sawtooths(selected_points()$min_lat[2], # second entry is for lens
+                     selected_points()$max_lat[2],
+                     selected_points()$min_lon[2] %% 360,
+                     selected_points()$max_lon[2] %% 360)
 
     })
     
@@ -104,81 +88,70 @@ server <- function(input, output) {
     ## MLE 
 
     ############ Stuff for filtering map
-    # read in list of ERA and CESM unique loation lat/long pairs
-    location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
     #initialize zoom 
-    zoom_val <- reactiveVal(0)       # rv <- reactiveValues(value = 0)
-    # Change the zoom button depending on how zoomed in we are
-    observeEvent(input$zoom_in, {
-      newValue <- ifelse(zoom_val()-1 < 0,zoom_val()-.2, zoom_val()-1 )
-      if(input$state == "United States"){
-        newValue <- zoom_val()-10
-      }
-      zoom_val(newValue)
+    zoom_val <- reactiveVal(0)  
+    observeEvent(input$zoom_in,{
+      new_value <- zoom_func(current_zoom = zoom_val(),
+                             state = input$state,
+                             type = -1)
+      zoom_val(new_value)
     })
-    observeEvent(input$zoom_out, {
-      newValue <- ifelse(zoom_val() < 0, zoom_val()+.2, zoom_val()+1)
-      if(input$state == "United States"){
-        newValue <- zoom_val()+10
-      }
-      zoom_val(newValue) 
+    observeEvent(input$zoom_out,{
+      new_value <- zoom_func(current_zoom = zoom_val(),
+                             state = input$state,
+                             type = 1)
+      zoom_val(new_value)
     })
-    #reset the zoom button
-    observeEvent(input$state,{
+    #reset the zoom button if state is changed or called to reset 
+    observeEvent(c(input$state,input$reset),{
       zoom_val(0)
     })
-    # also resets the zoom button
-    observeEvent(input$reset,{
-      zoom_val(0)
-    })
+
     # reactive bounding values to use for filtering 
-    bounding <- reactive({
-      # Zoom at larger scale if in US
-      if(input$state == "United States"){
-        list(lon_range = c(max(-136.5,-136.51-zoom_val()),
-                           min(-58.5,-58.5+zoom_val())),
-             lat_range = c(max(17.25,17.25-zoom_val()),
-                           min(55.5,55.5+zoom_val())))
-      }else{
-        state_map <- map_data("state",region = input$state)
-        list(lon_range = c(max(-136.5,min(state_map$long)-zoom_val()),
-                         min(-58.5,max(state_map$long)+zoom_val())),
-             lat_range = c(max(17.25,min(state_map$lat)-zoom_val()),
-                         min(55.5,max(state_map$lat)+zoom_val())))
-      }
+    zoom_map_bounds <- reactive({
+      map_bounds(state = input$state, 
+                 current_zoom = zoom_val())
     })
     
     output$point_selection_map <- renderPlot({
-      mapdata <- map_data("state")
-      pointsize <- 2
-      if(zoom_val() < 0 & input$state != "United States"){
-        mapdata <- map_data("county")
-        pointsize <- 3
-      }
-      if(input$state == "United States"){
-        pointsize = .1
-      }
-      ggplot() + 
-        geom_polygon(data = mapdata,
-                     aes(x=long,y=lat,group=group), fill = NA, color = "black")+
-        geom_point(data = location_points, 
-                   aes(x = lon, y = lat,color = dataset),
-                   size = pointsize) +
-        #coord_cartesian(xlim = bounding()$lon_range,
-        #                ylim = bounding()$lat_range) +
-        coord_quickmap(xlim = bounding()$lon_range,
-                                        ylim = bounding()$lat_range) +
-        labs(color = "Dataset",
-             title = "Station/Observation Locations") +
-        theme(axis.text = element_blank(),
-              axis.text.y = element_blank(),
-              axis.title = element_blank()
-              )
+      plot_brushed_map(state = input$state,
+                       current_zoom = zoom_val(),
+                       bounding_box = zoom_map_bounds())
     })
-
-    ####################################################
-    ## MLE 
-    ############ Stuff for plot 
+    
+    
+    
+    # For second comparision map - 
+    zoom_val_compare <- reactiveVal(0)  
+    observeEvent(input$zoom_in2,{
+      new_value <- zoom_func(current_zoom = zoom_val_compare(),
+                             state = input$comparison_state,
+                             type = -1)
+      zoom_val_compare(new_value)
+    })
+    observeEvent(input$zoom_out2,{
+      new_value <- zoom_func(current_zoom = zoom_val_compare(),
+                             state = input$comparison_state,
+                             type = 1)
+      zoom_val_compare(new_value)
+    })
+    #reset the zoom button if state is changed or called to reset 
+    observeEvent(c(input$comparison_state,input$reset2),{
+      zoom_val_compare(0)
+    })
+    zoom_map_comparison_bounds <- reactive({
+      map_bounds(state = input$comparison_state, 
+                 current_zoom = zoom_val_compare())
+    })
+    output$comparison_point_selection_map <- renderPlot({
+      plot_brushed_map(state = input$comparison_state,
+                       current_zoom = zoom_val_compare(),
+                       bounding_box = zoom_map_comparison_bounds())
+      })
+    
+    
+    ############
+    # Set up of filtered datasets: 
     
     selected_points <- reactive({
       brushedPoints(location_points,
@@ -190,6 +163,21 @@ server <- function(input, output) {
                   min_lat = min(lat),
                   max_lat = max(lat))
     })
+    selected_points_compare <- reactive({
+      brushedPoints(location_points,
+                    input$plot_brush2,
+                    xvar = "lon",yvar = "lat") %>% 
+        group_by(dataset) %>% 
+        summarize(min_lon = min(lon),
+                  max_lon = max(lon),
+                  min_lat = min(lat),
+                  max_lat = max(lat))
+    })
+    
+
+    ####################################################
+    ## MLE 
+    ############ Stuff for plot 
     
     mles_data <- reactive({
       era_points <- selected_points() %>%
@@ -211,8 +199,6 @@ server <- function(input, output) {
       n_rows <- mles_data() %>%
         select(month) %>% 
           summarize(n = n()) %>% as.numeric()
-      
-      
       if(n_rows ==0){return(err_plot)}
       
       mles_data() %>%
