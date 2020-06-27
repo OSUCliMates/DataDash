@@ -51,7 +51,9 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
         labs(color = "Dataset",
              title = "Station/Observation Locations") +
         theme(#axis.text = element_blank(),
+            legend.position = "bottom",
               axis.title = element_blank(),
               axis.ticks = element_blank()
-        )
+        )+
+        theme_dd()
 }

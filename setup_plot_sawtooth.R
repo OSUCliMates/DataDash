@@ -47,7 +47,8 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
       summarise(cum_prec = mean(avg_cumulative_prec))%>%
       ggplot()+
       geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))+
-      scale_color_discrete_sequential(palette = "viridis")
+      scale_color_discrete_sequential(palette = "viridis")+
+      theme_dd()
       
     #generate numeric derivative of the above plot
     p2 <- dat%>%
@@ -59,7 +60,8 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
       unnest()%>%
       ggplot()+
       geom_line(aes(x=water_day,y=agg_prec,color=as.factor(decade)))+
-      scale_color_discrete_sequential(palette = "viridis")
+      scale_color_discrete_sequential(palette = "viridis")+
+      theme_dd()
     
     grid.arrange(p1,p2,nrow=2)
   }
