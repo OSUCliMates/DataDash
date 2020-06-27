@@ -48,7 +48,15 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
       ggplot()+
       geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))+
       scale_color_discrete_sequential(palette = "viridis")+
-      theme_dd()
+      theme_dd()+
+      labs(x="Day",
+           y="Average Cumulative Precipitation (cm)",
+           color="Decade")+
+      scale_x_continuous(
+        breaks=c(1,62,124,183,244,305),
+        labels=c("Oct 1","Dec 1","Feb 1","Apr 1","Jun 1","Aug 1")
+      )
+
       
     #generate numeric derivative of the above plot
     p2 <- dat%>%
@@ -61,7 +69,14 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
       ggplot()+
       geom_line(aes(x=water_day,y=agg_prec,color=as.factor(decade)))+
       scale_color_discrete_sequential(palette = "viridis")+
-      theme_dd()
+      theme_dd()+
+      labs(x="Day",
+           y="Average Precipitation (cm/day)",
+           color="Decade")+
+      scale_x_continuous(
+        breaks=c(1,62,124,183,244,305),
+        labels=c("Oct 1","Dec 1","Feb 1","Apr 1","Jun 1","Aug 1")
+      )
     
     grid.arrange(p1,p2,nrow=2)
   }

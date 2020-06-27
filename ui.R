@@ -104,7 +104,9 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
                        #                 max = 50, value = c(41,47)),
                        #sliderInput("lon", label = h3("Longitude"), min = -125, 
                       #                 max = -66, value = c(-125,-116)),
-                       plotOutput("sawtooth"),
+                      plotOutput("sawtooth"),
+                      hr(),
+                      plotOutput("comp_sawtooth")
                        #plotOutput("ref_map")
                        )
               )
