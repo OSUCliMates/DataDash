@@ -98,9 +98,8 @@ server <- function(input, output) {
     
     
     ####################################################
-    ## MLE 
-
-    ############ Stuff for filtering map
+    ## Sidebar selection maps 
+    ####################################################
     #initialize zoom 
     zoom_val <- reactiveVal(0)  
     observeEvent(input$zoom_in,{
@@ -132,8 +131,7 @@ server <- function(input, output) {
                        bounding_box = zoom_map_bounds())
     })
     
-    
-    
+    ####################################################
     # For second comparision map - 
     zoom_val_compare <- reactiveVal(0)  
     observeEvent(input$zoom_in2,{
@@ -160,11 +158,11 @@ server <- function(input, output) {
       plot_brushed_map(state = input$comparison_state,
                        current_zoom = zoom_val_compare(),
                        bounding_box = zoom_map_comparison_bounds())
-      })
+    })
     
-    
-    ############
-    # Set up of filtered datasets: 
+    ############################################################
+    ##### Filter datasets based on brushed points selections 
+    ############################################################
     
     selected_points <- eventReactive(input$go,{
       brushedPoints(location_points,
@@ -203,25 +201,23 @@ server <- function(input, output) {
         as.numeric()
       ifelse(nrows == 0, TRUE, FALSE)
     })
-    
+  
 
-    
-
-    ####################################################
-    ## MLE 
-    ############ Data for plot 
+    ############################################################
+    ##### Get reactive data for precipitation deviation plots
+    ############################################################
+    # Default dataset if no selectoin - also united states baseline average comparison
     us_deviation <- get_us_precip_deviation()
     
     selection1 <- eventReactive(input$go,{
-      #get_precip_deviation_data(selected_points(),data_choice="Selection 1")
       get_precip_deviation_data(selected_points(),
-                                data_choice=input$state)
+                                data_choice=paste("Selection 1 - ", input$state))
     })
     
     selection2 <- eventReactive(c(input$go,input$comparison_checkbox),{
       if(input$comparison_checkbox){
         get_precip_deviation_data(selected_points_compare(),
-                                  data_choice=paste(input$comparison_state," - Bottom Map"))
+                                  data_choice=paste("Selection 2 - ",input$comparison_state))
       }
     })
     
@@ -237,67 +233,61 @@ server <- function(input, output) {
       data
     })
     
-    
+    ############################################################
+    #####  Render precip deviation plots 
+    ############################################################
     output$precip_deviation_plot <- renderPlot({
-      if(is_empty()){return(err_plot)}
+      # Initialize with overall US value
+      if(input$go == 0){
+        #return(monthly_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
+        return(seasonal_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
+        }
+      # If selection clears show US value
+      if(is_empty()){
+        #return(monthly_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
+        return(seasonal_precip_deviation(us_deviation))
+        }
+      # Plot with selections
+      #monthly_precip_deviation(precip_deviation_data())
+      seasonal_precip_deviation(precip_deviation_data())
+    })
+
+    output$yearly_precip_deviation <- renderPlot({
+      if(input$go == 0 ){return(err_plot)}
       
-      precip_deviation_data() %>%
-        #precip_deviation_test %>% mutate(month = lubridate::month(month_date),data_choice = "one") %>%# dataset for testing 
+      precip_deviation_data() %>% 
         ggplot() +
         geom_hline(yintercept = 0,linetype = "dashed") +
-        geom_line(aes(x = as.Date(month_date), y = mean_deviation,
+        #geom_line(aes(x = as.Date(month_date), y = mean_deviation,
+        geom_line(aes(x = as.Date(quarter_date), y = mean_deviation,
                       group = data_choice,
                       color = data_choice)) +
         scale_x_date() +
-        scale_y_continuous(n.breaks = 3)+
-        facet_wrap(~month) + 
+        scale_y_continuous(n.breaks = 3) +
+        theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
-              legend.title = element_blank())+
-        labs(#title = "What months are most variable in rainfall?",
-          x = "",
-          y = expression(dryer %<->% wetter))+
-        theme_dd()
-      
+              legend.title = element_blank()) +
+        labs(x = "", y = expression(dryer %<->% wetter))
     })
-
-
     
     
     output$precip_strips <- renderPlot({
-      if(is_empty()){return(err_plot)}
-
-      precip_deviation_data() %>% 
-      #precip_deviation_test %>% # dataset for testing 
-      #  mutate(date = as.Date(month_date)) %>%
-      #  mutate(year = lubridate::year(date),
-      #         month2 = lubridate::month(date)) %>%
-      ggplot() +
-        geom_tile(aes(x = as.Date(month_date), y = 1,fill = mean_deviation)) +
-        #geom_tile(aes(x = year, y = month2,fill = mean_deviation)) + # tried to have it with month on y axis
-        scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
-        facet_wrap(~data_choice,ncol = 1,strip.position = "left")+
-        #facet_grid(data_choice~month)+
-        scale_x_date() + 
-        labs(x = "",y = "") +
-        guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
-                                   title.position = "right",
-                                   title.theme = element_text(angle = 270))) +
-        theme(axis.text.y = element_blank(),
-              axis.ticks.y = element_blank(),
-              legend.text = element_blank(),
-              panel.background = element_rect(fill = "transparent",colour = NA),
-              plot.background = element_rect(fill = "transparent",colour = NA),
-              panel.spacing = unit(-.5, "lines")) +
-        theme_dd()
-
+      #if(is_empty()){return(err_plot)}
+      if(input$go == 0){
+        #return(monthly_strips(us_deviation) + ggtitle("Select points and click go"))
+        return(seasonal_strips(us_deviation) + ggtitle("Select points and click go"))
+      }
+      # If selection clears show US value
+      if(is_empty()){
+        #return(monthly_strips(us_deviation) + ggtitle("Select points and click go"))
+        return(seasonal_strips(us_deviation))
+      }
+      seasonal_strips(precip_deviation_data())
+      monthly_strips(precip_deviation_data())
     })
     
-    
-    
-    
-    
-    
+
     #### End MLE's stuff
     ####################################################
 
