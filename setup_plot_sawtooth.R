@@ -49,7 +49,7 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
       geom_line(aes(x=water_day,y=cum_prec,color=as.factor(decade)))+
       scale_color_discrete_sequential(palette = "viridis")+
       labs(x="Day",
-           y="Average Cumulative Precipitation (cm)",
+           y="Mean Cumulative Precipitation (cm)",
            color="Decade")+
       scale_x_continuous(
         breaks=c(1,62,124,183,244,305),
