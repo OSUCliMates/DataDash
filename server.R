@@ -90,7 +90,8 @@ server <- function(input, output) {
 
     output$insert_any_plot <- renderPlot({ #just a placeholder plot
       ggplot(data=extent_df)+
-        geom_point(aes(x=Longitude, y=Latitude))
+        geom_point(aes(x=Longitude, y=Latitude))+
+        theme_dd()
     }
     )
     
@@ -255,7 +256,9 @@ server <- function(input, output) {
               legend.title = element_blank())+
         labs(#title = "What months are most variable in rainfall?",
           x = "",
-          y = expression(dryer %<->% wetter))
+          y = expression(dryer %<->% wetter))+
+        theme_dd()
+      
     })
 
 
@@ -285,7 +288,9 @@ server <- function(input, output) {
               legend.text = element_blank(),
               panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
-              panel.spacing = unit(-.5, "lines")) 
+              panel.spacing = unit(-.5, "lines")) +
+        theme_dd()
+
     })
     
     
@@ -343,7 +348,8 @@ server <- function(input, output) {
         borders("state", size=1)+
         xlab("Longitude")+
         ylab("Latitude")+
-        theme(text = element_text(size=20))
+        theme(text = element_text(size=20))+
+        theme_dd()
     })
 
     output$VarPlot <- renderPlot({
@@ -353,7 +359,8 @@ server <- function(input, output) {
         geom_line(aes(x=Year, y=varTotPrecip))+
         labs(y="Variance in Total Monthly Precipitation (m)")+
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-        theme(text = element_text(size=19))
+        theme(text = element_text(size=19))+
+        theme_dd()
     })
 
     output$TotPlot <- renderPlot({
@@ -362,7 +369,8 @@ server <- function(input, output) {
         geom_line(aes(x=Year, y=TotYrPrecip), group=1, size=0.8)+
         labs(y="Total yearly precipitation (m)")+
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-        theme(text = element_text(size=20))
+        theme(text = element_text(size=20))+
+        theme_dd()
     })
 
     output$CumuPlot <- renderPlot({
@@ -370,7 +378,8 @@ server <- function(input, output) {
         geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
         labs(y="Cumulative precipitation (m)")+
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-        theme(text = element_text(size=20))
+        theme(text = element_text(size=20))+
+        theme_dd()
     })
     
 }

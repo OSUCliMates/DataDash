@@ -61,8 +61,10 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
               axis.title = element_blank(),
               axis.ticks = element_blank(),
               panel.background = element_rect(fill = "transparent",colour = NA),
-              plot.background = element_rect(fill = "transparent",colour = NA)
-        )
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              legend.position = "bottom"
+        )+
+        theme_dd()
 }
 
 
@@ -89,12 +91,4 @@ get_us_precip_deviation <- function(){
                data_choice = "United States")
         
 }
-
-
-
-
-
-
-
-
 
