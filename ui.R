@@ -105,7 +105,10 @@ ui <- fluidPage(
                       #                 max = -66, value = c(-125,-116)),
                       plotOutput("sawtooth"),
                       hr(),
-                      plotOutput("comp_sawtooth")
+                      conditionalPanel(
+                        condition = "input.comparison_checkbox == true",
+                        plotOutput("comp_sawtooth")
+                      )
                        #plotOutput("ref_map")
                        )
               )
