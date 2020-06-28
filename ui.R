@@ -2,15 +2,16 @@
 source("setup.R", local = FALSE)
 source("setup_plot_sawtooth.R", local=FALSE)
 source("setup_plot_maps.R", local=FALSE)
-ui <- fluidPage(
-  titlePanel("Data Dashboard for ASA ENVR Section Data Challenge"),
-  
-  
-  sidebarLayout(
-    # Side bar for selection choices 
-    sidebarPanel(
-      # perhaps include a checkbox ERA/CESMLENS dataset here?
-      selectInput(inputId = "state",
+ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsible = TRUE, inverse = TRUE, theme = shinytheme("darkly"),
+                 fluidPage(
+                   sidebarLayout(
+                     # Side bar for selection choices 
+                     sidebarPanel(
+                     #   tags$style(type="text/css", ".span8 .well { background-color: #00FFFF; }"),
+                       # tags$head(tags$style(
+                       #   HTML('#sidebar {background-color: #dec4de;}'))),
+                       # perhaps include a checkbox ERA/CESMLENS dataset here?
+                       selectInput(inputId = "state",
                   label = "Choose a state to zoom in",
                   choices = c("United States",state.name),
                   selected = "Oregon"),
@@ -117,6 +118,6 @@ ui <- fluidPage(
   )
 )
 
-
+)
 
 
