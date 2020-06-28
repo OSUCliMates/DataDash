@@ -10,19 +10,26 @@ ui <- fluidPage(
     # Side bar for selection choices 
     sidebarPanel(
       # perhaps include a checkbox ERA/CESMLENS dataset here?
+      helpText("Drag a rectangle to select an area to examine, then click go"),
       selectInput(inputId = "state",
                   label = "Choose a state to zoom in",
                   choices = c("United States",state.name),
                   selected = "Oregon"),
-      actionButton(inputId = "zoom_in",
-                   label = "Zoom in"),
-      actionButton(inputId = "zoom_out",
-                   label = "Zoom out"),
-      actionButton(inputId = "reset",
-                   label = "Reset Zoom"),
       plotOutput(outputId = "point_selection_map", 
-                 brush = "plot_brush"),
-      
+                 brush = "plot_brush",
+                 height = "300px"),
+      actionButton(inputId = "zoom_in",
+                   label = "Zoom in",
+                   class = "btn-sm"),
+      actionButton(inputId = "zoom_out",
+                   label = "Zoom out",
+                   class = "btn-sm"),
+      actionButton(inputId = "reset",
+                   label = "Reset Zoom",
+                   class = "btn-sm"),
+      actionButton(inputId = "go",
+                   label = "Go - See your results!",
+                   class="btn-primary btn-block"),
       # following is for the comparison map
       checkboxInput(inputId = "comparison_checkbox",
                     label = "Compare to a different location"),
@@ -33,14 +40,18 @@ ui <- fluidPage(
                     label = "Choose a state to zoom in",
                     choices = c("United States",state.name),
                     selected = "Oregon"),
-        actionButton(inputId = "zoom_in2",
-                     label = "Zoom in"),
-                        actionButton(inputId = "zoom_out2",
-                                     label = "Zoom out"),
-                        actionButton(inputId = "reset2",
-                                     label = "Reset Zoom"),
         plotOutput(outputId = "comparison_point_selection_map",
-                   brush = "plot_brush2")
+                   brush = "plot_brush2",
+                   height = "300px"),
+        actionButton(inputId = "zoom_in2",
+                     label = "Zoom in", 
+                     class = "btn-sm"),
+        actionButton(inputId = "zoom_out2",
+                     label = "Zoom out",
+                     class = "btn-sm"),
+        actionButton(inputId = "reset2",
+                     label = "Reset Zoom",
+                     class = "btn-sm")
       ),
 
 
@@ -52,20 +63,24 @@ ui <- fluidPage(
   # Different tabs where we can put our stuff. 
   tabsetPanel(type = "tabs",
               
-              tabPanel("what is this?",
-                       p("The layout for the app right now is using tabsetPanel. Inside each tabPanel function is its own little page where you can put content")),
+              tabPanel("Overview",
+                       h3("just trying to start up an outline - plz add stuff"),
+                       h3("About the datasets"),
+                       p("We used two climate reanalysis datasets, ERA and CESM-LENS"),
+                       h3("We chose precipitation data"),
+                       p("Find our code and report on our github page")),
               
-              tabPanel("smither8",
-                       titlePanel("Choose an Area of Interest"),
-                       sidebarLayout(
-                         sidebarPanel(
-                           helpText("Use your cursor to select a rectangle on the map. \n "),
-                           plotOutput("shp_map", hover = "hov", brush= "brus"),
-                           tableOutput("hov_info")),
-                         mainPanel(
-                           tableOutput("brus_info"),
-                           plotOutput("insert_any_plot")))
-              ),
+             tabPanel("smither8",
+             titlePanel("Choose an Area of Interest"),
+             sidebarLayout(
+             sidebarPanel(
+             helpText("Use your cursor to select a rectangle on the map. \n "),
+             plotOutput("shp_map", hover = "hov", brush= "brus"),
+             tableOutput("hov_info")),
+             mainPanel(
+             tableOutput("brus_info"),
+             plotOutput("insert_any_plot")))
+             ),
               
               tabPanel("Jeffica",
                        titlePanel("Precipitation in Oregon - Quadrant/Year Comparison Tool"),
@@ -92,10 +107,22 @@ ui <- fluidPage(
                        #Jess put  the stuff you're working on in here
               ),
               
-              tabPanel("MLE",
-                       #Emily put  the stuff you're working on in here
-                       plotOutput(outputId = "precip_deviation_plot"),
-                       plotOutput(outputId = "precip_strips")
+              tabPanel("Monthly Precipitation Deviation",
+                       h3("Deviation from average monthly rainfall"),
+                       # Plot 1: 
+                       #plotOutput(outputId = "precip_deviation_plot"),
+                       withSpinner(plotOutput(outputId = "precip_deviation_plot")),
+                       checkboxInput(inputId = "baseline",
+                                     label = "Compare to United States baseline",
+                                     value = TRUE),
+                       p("Description: We see that Positive values indicate that year was wetter than normal,
+                         negative values indicate drier than normal."),
+                       h3("Precipitation Strips"),
+                       # Plot 2: 
+                       withSpinner(plotOutput(outputId = "precip_strips")),
+                       p("These color strips show when the selected location is wetter (green) or dryer (brown) 
+                         then average - Comparison to overall United States included")
+                       
               ),
               
               tabPanel("K8",#stay cool chief

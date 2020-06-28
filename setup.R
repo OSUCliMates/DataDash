@@ -5,6 +5,7 @@ library(tidync)
 library(colorspace)
 library(gridExtra)
 library(sf)
+library(shinycssloaders)
 
 #filenames
 LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
@@ -16,7 +17,7 @@ BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds")  #JRR
 toMap <- distinct(BigDF, lat, lon2)  #JRR
 
 #initialize vars (probably should be elsewhere?)
-shp_file_s8 <- st_read("oregon_boundary/or_state_boundary.shp") %>% 
+shp_file_s8 <- st_read("oregon_boundary/or_state_boundary.shp") %>%
   st_transform(4326)
 hov_df <- data.frame(x=0, y=0)
 hov_df <- c("Cursor Longitude", "Cursor Latitude")

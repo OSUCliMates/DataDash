@@ -38,8 +38,6 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
             theme_void()
         )
     }
-    
-    
     mapdata <- map_data("state")
     pointsize <- 2
     if(current_zoom < 0 & state != "United States"){
@@ -51,17 +49,19 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
     }
     ggplot() + 
         geom_polygon(data = mapdata,
-                     aes(x=long,y=lat,group=group), fill = NA, color = "black")+
+                     aes(x=long,y=lat,group=group), fill = "light grey", color = "black")+
         geom_point(data = location_points, 
-                   aes(x = lon, y = lat,color = dataset),
+                   aes(x = lon, y = lat,shape = dataset),
                    size = pointsize) +
         coord_quickmap(xlim = bounding_box$lon_range,
                        ylim = bounding_box$lat_range) +
         labs(color = "Dataset",
              title = "Station/Observation Locations") +
-        theme(#axis.text = element_blank(),
+        theme(axis.text = element_blank(),
               axis.title = element_blank(),
-              axis.ticks = element_blank()
+              axis.ticks = element_blank(),
+              panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA)
         )
 }
 
@@ -79,6 +79,15 @@ get_precip_deviation_data <- function(selected_points, data_choice){
         summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
         mutate(month = lubridate::month(month_date,label = T),
                data_choice = data_choice)
+}
+
+get_us_precip_deviation <- function(){
+    precip_deviation %>% 
+        group_by(month_date) %>% 
+        summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
+        mutate(month = lubridate::month(month_date,label = T),
+               data_choice = "United States")
+        
 }
 
 

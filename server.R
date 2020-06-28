@@ -12,7 +12,7 @@ server <- function(input, output) {
                      selected_points()$max_lon[2] %% 360)
 
     })
-    
+
     #second plot
     output$comp_sawtooth <- renderPlot({
       plot_sawtooths(
@@ -20,7 +20,7 @@ server <- function(input, output) {
         selected_points_compare()$max_lat[2],
         selected_points_compare()$min_lon[2] %% 360,
         selected_points_compare()$max_lon[2] %% 360)
-    
+
     })
     
     #I'M COMMENTING THIS OUT SINCE IT'S REDUNDANT AT THIS POINT 
@@ -61,11 +61,11 @@ server <- function(input, output) {
       #            )
       
       #})
-    # smither8
-    output$shp_map <- renderPlot({ #shapefile 
+    # # smither8
+    output$shp_map <- renderPlot({ #shapefile
       plot(shp_file_s8$geometry)
     })
-    
+
     output$hov_info <- renderTable({ #table for hover
       if (is.null(input$hov)){NULL}
       else{
@@ -87,7 +87,7 @@ server <- function(input, output) {
       }
       extent_df
     }, rownames = TRUE)
-    
+
     output$insert_any_plot <- renderPlot({ #just a placeholder plot
       ggplot(data=extent_df)+
         geom_point(aes(x=Longitude, y=Latitude))
@@ -165,7 +165,7 @@ server <- function(input, output) {
     ############
     # Set up of filtered datasets: 
     
-    selected_points <- reactive({
+    selected_points <- eventReactive(input$go,{
       brushedPoints(location_points,
                     input$plot_brush,
                     xvar = "lon",yvar = "lat") %>% 
@@ -175,7 +175,7 @@ server <- function(input, output) {
                   min_lat = min(lat),
                   max_lat = max(lat))
     })
-    selected_points_compare <- reactive({
+    selected_points_compare <- eventReactive(input$go,{
       brushedPoints(location_points,
                     input$plot_brush2,
                     xvar = "lon",yvar = "lat") %>% 
@@ -186,7 +186,7 @@ server <- function(input, output) {
                   max_lat = max(lat))
     })
     
-    is_empty <- reactive({
+    is_empty <- eventReactive(input$go,{
       nrows <- selected_points() %>%
         select(min_lat) %>% 
         summarize(n = n()) %>%
@@ -194,7 +194,7 @@ server <- function(input, output) {
       ifelse(nrows == 0, TRUE, FALSE)
     })
     
-    is_comparison_empty <- reactive({
+    is_comparison_empty <- eventReactive(c(input$comparison_checkbox,input$go),{
       if(!input$comparison_checkbox){return(FALSE)}
       nrows <- selected_points_compare() %>%
         select(min_lat) %>% 
@@ -204,53 +204,88 @@ server <- function(input, output) {
     })
     
 
+    
+
     ####################################################
     ## MLE 
     ############ Data for plot 
+    us_deviation <- get_us_precip_deviation()
     
-    precip_deviation_data <- reactive({
-      if(!is_comparison_empty()){
-        rbind(
-          get_precip_deviation_data(selected_points(),data_choice="Selection 1"),
-          get_precip_deviation_data(selected_points_compare(),data_choice="Selection 2")
-        )
-      }else{
-        get_precip_deviation_data(selected_points(),data_choice="Selection 1")
+    selection1 <- eventReactive(input$go,{
+      #get_precip_deviation_data(selected_points(),data_choice="Selection 1")
+      get_precip_deviation_data(selected_points(),
+                                data_choice=input$state)
+    })
+    
+    selection2 <- eventReactive(c(input$go,input$comparison_checkbox),{
+      if(input$comparison_checkbox){
+        get_precip_deviation_data(selected_points_compare(),
+                                  data_choice=paste(input$comparison_state," - Bottom Map"))
       }
     })
+    
+    precip_deviation_data <- eventReactive(c(input$go,input$comparison_checkbox,input$baseline),{
+      if(input$comparison_checkbox){
+        data <- rbind(selection1(),selection2())
+      }else{
+        data <- selection1()
+      }
+      if(input$baseline){
+        data <- rbind(data,us_deviation)
+      }
+      data
+    })
+    
     
     output$precip_deviation_plot <- renderPlot({
       if(is_empty()){return(err_plot)}
       
       precip_deviation_data() %>%
+        #precip_deviation_test %>% mutate(month = lubridate::month(month_date),data_choice = "one") %>%# dataset for testing 
         ggplot() +
         geom_hline(yintercept = 0,linetype = "dashed") +
         geom_line(aes(x = as.Date(month_date), y = mean_deviation,
                       group = data_choice,
-                      color = data_choice))+
+                      color = data_choice)) +
         scale_x_date() +
-        scale_y_continuous(breaks = c(-.005,0,.005))+
+        scale_y_continuous(n.breaks = 3)+
         facet_wrap(~month) + 
-        theme(legend.position = "none")+
+        theme(panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              legend.title = element_blank())+
         labs(#title = "What months are most variable in rainfall?",
-             x = "",
-             title = "Difference from Average Monthly Rainfall",
-             y = expression(dryer %<->% wetter))
-      
+          x = "",
+          y = expression(dryer %<->% wetter))
     })
+
+
+    
     
     output$precip_strips <- renderPlot({
       if(is_empty()){return(err_plot)}
 
-      precip_deviation_data() %>%
+      precip_deviation_data() %>% 
+      #precip_deviation_test %>% # dataset for testing 
+      #  mutate(date = as.Date(month_date)) %>%
+      #  mutate(year = lubridate::year(date),
+      #         month2 = lubridate::month(date)) %>%
       ggplot() +
-        geom_tile(aes(x = as.Date(month_date), y = 1,fill = mean_deviation))+
-        scale_fill_continuous_diverging(palette = "Green-Brown")+
+        geom_tile(aes(x = as.Date(month_date), y = 1,fill = mean_deviation)) +
+        #geom_tile(aes(x = year, y = month2,fill = mean_deviation)) + # tried to have it with month on y axis
+        scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
+        facet_wrap(~data_choice,ncol = 1,strip.position = "left")+
+        #facet_grid(data_choice~month)+
         scale_x_date() + 
-        labs(x = "",y = expression(dryer %<->% wetter))+
-        theme(legend.position = "none",
-              axis.text.y = element_blank(),
-              axis.ticks.y = element_blank())
+        labs(x = "",y = "") +
+        guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
+                                   title.position = "right",
+                                   title.theme = element_text(angle = 270))) +
+        theme(axis.text.y = element_blank(),
+              axis.ticks.y = element_blank(),
+              legend.text = element_blank(),
+              panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              panel.spacing = unit(-.5, "lines")) 
     })
     
     
@@ -271,7 +306,6 @@ server <- function(input, output) {
         summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
         group_by(Year) %>%
         summarise(varTotPrecip = var(TotMoPrecip))})
-    
     TotPlotsData <- reactive({
       brushedPoints(BigDF, input$selection1) %>%
         filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
@@ -279,30 +313,30 @@ server <- function(input, output) {
         summarise(TotYrPrecip=sum(PREC)) %>%
         mutate(CumuPrecip = cumsum(TotYrPrecip))}) %>%
       debounce(2000)
-    
-    xAxisTicks <- reactive({
-      
-      # If number of years plotted is odd, the last label will occur before the last plotted point, so
-      # add two to the final year displayed
-      if ((input$Year[2] - input$Year[1]) %% 2 > 0) {
-        max_year <- input$Year[2] + 2
-      } 
-      else {
-        max_year <- input$Year[2]
+
+   xAxisTicks <- reactive({
+
+     # If number of years plotted is odd, the last label will occur before the last plotted point, so
+     # add two to the final year displayed
+     if ((input$Year[2] - input$Year[1]) %% 2 > 0) {
+       max_year <- input$Year[2] + 2
+     }
+     else {
+       max_year <- input$Year[2]
       }
-      
+
       # If over 10 years plotted, only label at every other break
       if ((input$Year[2]-input$Year[1]) > 10) {
         breaks <- seq(from = input$Year[1],
-                      to = max_year,        
+                      to = max_year,
                       by = 2)
       } else {
         breaks <- seq(from = input$Year[1],
-                      to = max_year,         
+                      to = max_year,
                       by = 1)
       }
     })
-    
+
     output$mPlot <- renderPlot({
       ggplot(toMap)+
         geom_point(aes(x=lon2, y=lat), color="red", alpha=0.25)+
@@ -311,7 +345,7 @@ server <- function(input, output) {
         ylab("Latitude")+
         theme(text = element_text(size=20))
     })
-    
+
     output$VarPlot <- renderPlot({
       VarPlotData()
       xAxisTicks()
@@ -321,7 +355,7 @@ server <- function(input, output) {
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
         theme(text = element_text(size=19))
     })
-    
+
     output$TotPlot <- renderPlot({
       TotPlotsData()
       ggplot(TotPlotsData())+
@@ -330,7 +364,7 @@ server <- function(input, output) {
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
         theme(text = element_text(size=20))
     })
-    
+
     output$CumuPlot <- renderPlot({
       ggplot(TotPlotsData())+
         geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
