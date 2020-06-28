@@ -103,6 +103,7 @@ ui <- fluidPage(
                        #                 max = 50, value = c(41,47)),
                        #sliderInput("lon", label = h3("Longitude"), min = -125, 
                       #                 max = -66, value = c(-125,-116)),
+                      br(),
                       plotOutput("sawtooth"),
                       hr(),
                       conditionalPanel(
