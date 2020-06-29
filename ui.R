@@ -4,15 +4,36 @@ source("setup_plot_sawtooth.R", local=FALSE)
 source("setup_plot_maps.R", local=FALSE)
 source("setup_plot_ranges.R", local=FALSE)
 
-ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsible = TRUE, theme = shinytheme("darkly"),
+ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinytheme("darkly"),
                  tabPanel("Overview",
                           fluidPage(
                             mainPanel(
-                              h3("just trying to start up an outline - plz add stuff"),
+                              h2("Welcome to the CliMates Data Dashboard!"),
+                              p("This is a part of the ASA ENVR Section Data Challenge 2020."),
+                              p("You can find our code and full report on our", a(href = 'https://github.com/OSUCliMates', 'github')," page"),
+                              br(),
+                              h3("About Us"),
+                              p("We are a team from Oregon State University, so it's no surprise that we are interested
+                                in precipitation. If that's not your thing, have no fear! This data dashboard is a proof 
+                                of concept. There is a steep learning curve to examining large and complex data sets, and 
+                                in the spirit of 2020, we'd like to flatten that curve."),
+                              br(),
+                              p("In the next tab you'll see an
+                                interactive tool for investigating two large data sets. We hope it lets you bypass
+                                some of the initial drudgery of data cleaning and wrangling, and just get a good look 
+                                at the data. Have some fun! Play around. See if you can find anything that surprises you."),
+                              br(),
                               h3("About the datasets"),
+                              h5(" CESM Large Ensemble Community Project (CESM-LENS)"),
                               p("We used two climate reanalysis datasets, ERA and CESM-LENS"),
-                              h3("We chose precipitation data"),
-                              p("Find our code and full report on our", a(href = 'https://github.com/OSUCliMates', 'github')," page"))
+                              
+                              h5("ERA - Interim"),
+                              p("describe here :) "),
+                              br(),
+                              h3("Acknowledgements"),
+                              p("advisors + data set creators + contest creators? do advisors go with About Us or are they not
+                              technically the team?")
+                              )
                             )
                           ),
                  tabPanel("The Data",
@@ -44,9 +65,9 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
       actionButton(inputId = "reset",
                    label = "Reset Zoom",
                    class = "btn-sm")),
-      actionButton(inputId = "go",
-                   label = "Go - See your results!",
-                   class="btn-primary btn-block"),
+      # actionButton(inputId = "go", ##################################### moved so that it shows up below
+      #              label = "Go - See your results!",#####################
+      #              class="btn-primary btn-block"),####################### the conditional panel
       # following is for the comparison map
       checkboxInput(inputId = "comparison_checkbox",
                     label = "Compare to a different location"),
@@ -73,29 +94,41 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
         actionButton(inputId = "reset2",
                      label = "Reset Zoom",
                      class = "btn-sm")
-      )
+      ),
+      actionButton(inputId = "go", ###################################### New Location
+                   label = "Go - See your results!",
+                   class="btn-primary btn-block")
       
       ),
     mainPanel(
   tabsetPanel(type = "tabs", 
-              tabPanel("CESM-LENS Variability", #smither8
-                       h3("A look into the CESM-LENS Ensemble Members"),
+              tabPanel("Model Variability", #smither8
+                       h3("A Look Into The CESM-LENS Ensemble Members"),
+                       p("The CESM-LENS data set comes from a large ensemble model. The goal is to be able to distinguish 
+                       between model error and internal climate variability."),
+                       p("Here we attempt to highlight that distinction
+                         by investigating how different the model members are from each other over time. The data were
+                         first reduced by calculating average precipitation for each day of the year in groupings of decades.
+                         Then, the range of those values was calculated and used as a proxy for
+                         variability between members over time."),
+                         p("As you choose areas of interest you can see how
+                         those ranges increase and decrease during different parts of the year, and if they change in 
+                         different ways throughout different decades."),
+                       h4("Area #1"),
                        withSpinner(
                          plotOutput("ranges_smooth")),
                        conditionalPanel(
-                         h3("aaa"),
+                         h4("Area #2"),
                          condition = "input.comparison_checkbox == true",
-                         withSpinner(plotOutput("comp_ranges_smooth")),
-                         p("blah blah etx etc")
+                         withSpinner(plotOutput("comp_ranges_smooth"))
                        ),
-                       h3("bbbs"),
+                       h4("Area #1 Boxplot"),
                        withSpinner(
                          plotOutput("ranges_box")),
                        conditionalPanel(
-                         h3("ccc"),
+                         h4("Area #2 Boxplot"),
                          condition = "input.comparison_checkbox == true",
-                         withSpinner(plotOutput("comp_ranges_box")),
-                         p("blah blah etx etc")
+                         withSpinner(plotOutput("comp_ranges_box"))
                        )
               ),
               
@@ -175,7 +208,7 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
                        # Plot 2: 
                        
                        withSpinner(plotOutput(outputId = "precip_strips")),
-                       p("These color strips show when the selected location is wetter (green) or dryer (brown) 
+                       p("These color strips show when the selected location is wetter (green) or drier (brown) 
                          then average - Comparison to overall United States included. Often we see periods of drought that are evident in the entire US as well")
                        
               )
