@@ -2,19 +2,20 @@
 source("setup.R", local = FALSE)
 source("setup_plot_sawtooth.R", local=FALSE)
 source("setup_plot_maps.R", local=FALSE)
+source("setup_plot_ranges.R", local=FALSE)
 
-# ui <- fluidPage(
-#   titlePanel("Data Dashboard for ASA ENVR Section Data Challenge"),
-#   
-#   
-#   sidebarLayout(
-#     # Side bar for selection choices 
-#     sidebarPanel(
-#       # perhaps include a checkbox ERA/CESMLENS dataset here?
-#       helpText("Drag a rectangle to select an area to examine, then click go"),
-#       selectInput(inputId = "state",
-
-ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsible = TRUE, inverse = TRUE, theme = shinytheme("darkly"),
+ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsible = TRUE, theme = shinytheme("darkly"),
+                 tabPanel("Overview",
+                          fluidPage(
+                            mainPanel(
+                              h3("just trying to start up an outline - plz add stuff"),
+                              h3("About the datasets"),
+                              p("We used two climate reanalysis datasets, ERA and CESM-LENS"),
+                              h3("We chose precipitation data"),
+                              p("Find our code and full report on our", a(href = 'https://github.com/OSUCliMates', 'github')," page"))
+                            )
+                          ),
+                 tabPanel("The Data",
                  fluidPage(
                    sidebarLayout(
                      # Side bar for selection choices 
@@ -73,35 +74,51 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
                      label = "Reset Zoom",
                      class = "btn-sm")
       )
-
-
-      
       
       ),
     mainPanel(
-  # Output: Tabset
-  # Different tabs where we can put our stuff. 
-  tabsetPanel(type = "tabs",
-              
-              tabPanel("Overview",
-                       h3("just trying to start up an outline - plz add stuff"),
-                       h3("About the datasets"),
-                       p("We used two climate reanalysis datasets, ERA and CESM-LENS"),
-                       h3("We chose precipitation data"),
-                       p("Find our code and full report on our", a(href = 'https://github.com/OSUCliMates', 'github')," page")
+  tabsetPanel(type = "tabs", 
+              tabPanel("CESM-LENS Variability", #smither8
+                       h3("A look into the CESM-LENS Ensemble Members"),
+                       withSpinner(
+                         plotOutput("ranges_smooth")),
+                       conditionalPanel(
+                         h3("aaa"),
+                         condition = "input.comparison_checkbox == true",
+                         withSpinner(plotOutput("comp_ranges_smooth")),
+                         p("blah blah etx etc")
                        ),
+                       h3("bbbs"),
+                       withSpinner(
+                         plotOutput("ranges_box")),
+                       conditionalPanel(
+                         h3("ccc"),
+                         condition = "input.comparison_checkbox == true",
+                         withSpinner(plotOutput("comp_ranges_box")),
+                         p("blah blah etx etc")
+                       )
+              ),
               
-             tabPanel("smither8",
-              titlePanel("Choose an Area of Interest"),
-              sidebarLayout(
-              sidebarPanel(
-              helpText("Use your cursor to select a rectangle on the map. \n "),
-              plotOutput("shp_map", hover = "hov", brush= "brus"),
-              tableOutput("hov_info")),
-              mainPanel(
-              tableOutput("brus_info"),
-              plotOutput("insert_any_plot")))
-             ),
+              #########
+              
+              # tabPanel("Seasonal Precipitation Deviation",
+              #          h3("Deviation from average seasonal rainfall"),
+              #          # Plot 1: 
+              #          #plotOutput(outputId = "precip_deviation_plot"),
+              #          withSpinner(plotOutput(outputId = "precip_deviation_plot")),
+              #          checkboxInput(inputId = "baseline",
+              #                        label = "Compare to United States baseline",
+              #                        value = TRUE),
+              #          withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
+              #          p("Description:"),
+              #          h3("Precipitation Strips"),
+              #          # Plot 2: 
+              #          
+              #          withSpinner(plotOutput(outputId = "precip_strips")),
+              #          p("These cvide")
+              #          
+              # )
+              ###############
              tabPanel("Decadal Cumulative Precipitation",#stay cool chief
                       #sliderInput("lat", label = h3("Latitude"), min = 24, 
                       #                 max = 50, value = c(41,47)),
@@ -170,4 +187,4 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
 
 )
 
-
+)

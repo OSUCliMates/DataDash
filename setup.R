@@ -8,24 +8,34 @@ library(sf)
 library(viridis)
 library(shinycssloaders)
 library(shinythemes)
+library(ggpubr)
+library(shinyjs)
 
+
+appCSS <- "
+#loading-content {
+  position: absolute;
+  background: #000000;
+  opacity: 0.9;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  height: 100%;
+  text-align: center;
+  color: #FFFFFF;
+}
+"
 
 #filenames
 LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
-OR_shpfile <- "oregon_boundary/or_state_boundary.shp"
 
 #setup for reference plot
 us <- map_data("state")
 BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds")  #JRR
 toMap <- distinct(BigDF, lat, lon2)  #JRR
 
-#initialize vars (probably should be elsewhere?)
-shp_file_s8 <- st_read("oregon_boundary/or_state_boundary.shp") %>%
-  st_transform(4326)
-hov_df <- data.frame(x=0, y=0)
-hov_df <- c("Cursor Longitude", "Cursor Latitude")
-extent_df <- data.frame(Longitude=c(0,0), Latitude=c(0,0))
-
+#setup for range plot
+range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
 
 # PRECIPITATION DEVIATION FROM AVERAGE
 # Code to calculate this dataset found in era_precip_deviation.R in Examples folder in CliMates
