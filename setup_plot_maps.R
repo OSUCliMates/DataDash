@@ -81,49 +81,61 @@ get_precip_deviation_data <- function(selected_points, data_choice){
                        selected_points$min_lat[1],
                        selected_points$max_lat[1])) %>% 
         #group_by(month_date) %>% 
+        #mutate(percent_deviation = diff_from_prec_mean/overall_prec_mean) %>%
         group_by(quarter_date,season) %>%
-        summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
+        
+        summarize(avg_perc_dev = mean(percent_deviation)) %>%
+        #summarize(mean_deviation = mean(diff_from_prec_mean)) %>%
+        #summarize(mean_deviation = mean(diff_from_prec_mean),
+        #          percent_deviation = mean(diff_from_prec_mean)/mean(overall_prec_mean)) %>% 
+    
         #mutate(month = lubridate::month(month_date,label = T),
          #      data_choice = data_choice)
         mutate(data_choice = data_choice)
 }
 
 
-
+#era_precip_quarter_deviation %>% 
+  
 
 get_us_precip_deviation <- function(){
     precip_deviation %>% 
+     # mutate(percent_deviation = diff_from_prec_mean/overall_prec_mean) %>%
      #era_precip_quarter_deviation %>%   
         #group_by(quarter_date) %>%
         group_by(quarter_date,season) %>%
+        summarize(avg_perc_dev = mean(percent_deviation)) %>%
         #group_by(month_date) %>% 
-        summarize(mean_deviation = mean(diff_from_prec_mean)) %>% 
+        #summarize(mean_deviation = mean(diff_from_prec_mean)) %>%
+        #summarize(mean_deviation = mean(diff_from_prec_mean),
+        #          percent_deviation = mean(diff_from_prec_mean)/mean(overall_prec_mean)) %>% 
         #mutate(month = lubridate::month(month_date,label = T),
         #       data_choice = "United States")
         mutate(data_choice = "United States Average")
         
 }
 
+
 seasonal_precip_deviation <- function(data){
     data %>%
         #precip_deviation_test %>% mutate(month = lubridate::month(month_date),data_choice = "one") %>%# dataset for testing 
         ggplot() +
         geom_hline(yintercept = 0,linetype = "dashed") +
-        geom_line(aes(x = as.Date(quarter_date), y = mean_deviation,
+        geom_line(aes(x = as.Date(quarter_date), y = avg_perc_dev,#y = mean_deviation,
                       group = data_choice,
                       color = data_choice))+
         #geom_ribbon(aes(x = as.Date(quarter_date),ymin = mean_deviation, ymax = 0,
         #              group = data_choice,
         #              fill = data_choice),alpha = .6)+
         scale_x_date() +
-        scale_y_continuous(n.breaks = 3) +
+        scale_y_continuous(labels = scales::percent,n.breaks = 3) +
         scale_fill_viridis(discrete = TRUE) +
         facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")))+
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
               legend.title = element_blank()) +
-        labs(x = "Year",y = expression(dryer %<->% wetter))
+        labs(x = "Year",y = expression(drier %<->% wetter))
 }
 
 
@@ -138,25 +150,25 @@ monthly_precip_deviation <- function(data){
                                       color = data_choice)) +
                         #fill = data_choice))+
         scale_x_date() +
-        scale_y_continuous(n.breaks = 3) +
+        scale_y_continuous(labels = scales::percent()) +#,n.breaks = 3) +
         facet_wrap(~month) + 
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
               legend.title = element_blank()) +
-        labs(x = "Year", y = expression(dryer %<->% wetter))
+        labs(x = "Year", y = expression(drier %<->% wetter))
 }
 
 
 seasonal_strips <- function(data){
     data %>%
         ggplot() +
-        geom_tile(aes(x = as.Date(quarter_date), y = 1,fill = mean_deviation)) +
+        geom_tile(aes(x = as.Date(quarter_date), y = 1,fill= avg_perc_dev)) +#fill = mean_deviation)) +
         facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
         scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
         scale_x_date() + 
         labs(x = "",y = "") +
-        guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
+        guides(fill = guide_colorbar(title = expression(wetter %<->% drier),
                                      title.position = "right",
                                      title.theme = element_text(angle = 270))) +
         theme_dd() +
@@ -178,7 +190,7 @@ monthly_strips <- function(data){
         facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
         scale_x_date() + 
         labs(x = "",y = "") +
-        guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
+        guides(fill = guide_colorbar(title = expression(wetter %<->% drier),
                                      title.position = "right",
                                      title.theme = element_text(angle = 270))) +
         theme_dd() +

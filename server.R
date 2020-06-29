@@ -1,8 +1,8 @@
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-  
-  # K8 I think
+########################################################  
+  # K8
     
     #first plot
     output$sawtooth <- renderPlot({
@@ -22,81 +22,42 @@ server <- function(input, output) {
         selected_points_compare()$max_lon[2] %% 360)
 
     })
-    
-    #I'M COMMENTING THIS OUT SINCE IT'S REDUNDANT AT THIS POINT 
-    #output$ref_map <- renderPlot({
-    #   
-    #   max_mins <- brushedPoints(location_points,
-    #                             input$plot_brush,
-    #                             xvar = "lon",yvar = "lat") %>% 
-    #     filter(dataset == "lens") %>% 
-    #     summarize(min_lon = min(lon),
-    #               max_lon = max(lon),
-    #               min_lat = min(lat),
-    #               max_lat = max(lat))
-    #   a <- max_mins[1,3]
-    #   b <- max_mins[1,4]
-    #   c <- max_mins[1,1]
-    #   d <- max_mins[1,2]
-    #   
-    #   ggplot(us, aes(x = long, y = lat, group = group)) +
-    #     geom_polygon(fill="lightgray", colour = "black")+
-    #     geom_rect(aes(xmin=c,
-    #                   xmax=d,
-    #                   ymin=a,
-    #                   ymax=b),
-    #               fill="darkorchid2",
-    #               alpha=0.01
-    #     )
-      
-      
-      #ggplot(us, aes(x = long, y = lat, group = group)) +
-      #  geom_polygon(fill="lightgray", colour = "black")+
-      #  geom_rect(aes(xmin=input$lon[1],
-      #                xmax=input$lon[2],
-      #                ymin=input$lat[1],
-      #                ymax=input$lat[2]),
-      #            fill="darkorchid2",
-      #            alpha=0.01
-      #            )
-      
-      #})
+#######################################################################
     # # smither8
-    output$shp_map <- renderPlot({ #shapefile
-      plot(shp_file_s8$geometry)
-    })
-
-    output$hov_info <- renderTable({ #table for hover
-      if (is.null(input$hov)){NULL}
-      else{
-        hov_df[1] <- input$hov$x
-        hov_df[2] <- input$hov$y
-      }
-      hov_df
+    output$ranges_smooth <- renderPlot({ 
+      plot_ranges_smooth(selected_points()$min_lat[2], 
+                     selected_points()$max_lat[2],
+                     selected_points()$min_lon[2] %% 360,
+                     selected_points()$max_lon[2] %% 360)
     })
     
-    output$brus_info <- renderTable({     # display rectangle
-      if (is.null(input$brus)){
-        NULL
-      }
-      else{
-        extent_df[1,1] <<- input$brus$xmin
-        extent_df[2,1] <<- input$brus$xmax
-        extent_df[2,2] <<- input$brus$ymin
-        extent_df[1,2] <<- input$brus$ymax
-      }
-      extent_df
-    }, rownames = TRUE)
-
-    output$insert_any_plot <- renderPlot({ #just a placeholder plot
-      ggplot(data=extent_df)+
-        geom_point(aes(x=Longitude, y=Latitude))+
-        theme_dd()
+    output$comp_ranges_smooth <- renderPlot({ 
+      plot_ranges_smooth(
+        selected_points_compare()$min_lat[2],
+        selected_points_compare()$max_lat[2],
+        selected_points_compare()$min_lon[2] %% 360,
+        selected_points_compare()$max_lon[2] %% 360)
+    }
+    )
+    
+    output$ranges_box <- renderPlot({ 
+      plot_ranges_box(selected_points()$min_lat[2], 
+                  selected_points()$max_lat[2],
+                  selected_points()$min_lon[2] %% 360,
+                  selected_points()$max_lon[2] %% 360)
+    })
+    
+    output$comp_ranges_box <- renderPlot({ 
+      plot_ranges_box(
+        selected_points_compare()$min_lat[2],
+        selected_points_compare()$max_lat[2],
+        selected_points_compare()$min_lon[2] %% 360,
+        selected_points_compare()$max_lon[2] %% 360)
     }
     )
     
     
-    
+#########################################################################    
     ####################################################
     ## Sidebar selection maps 
     ####################################################

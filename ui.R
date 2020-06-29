@@ -2,6 +2,8 @@
 source("setup.R", local = FALSE)
 source("setup_plot_sawtooth.R", local=FALSE)
 source("setup_plot_maps.R", local=FALSE)
+source("setup_plot_ranges.R", local=FALSE)
+
 
 # ui <- fluidPage(
 #   titlePanel("Data Dashboard for ASA ENVR Section Data Challenge"),
@@ -14,33 +16,59 @@ source("setup_plot_maps.R", local=FALSE)
 #       helpText("Drag a rectangle to select an area to examine, then click go"),
 #       selectInput(inputId = "state",
 
-ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge",
-                 collapsible = TRUE, inverse = TRUE, theme = shinytheme("darkly"),
-                 
-                 
+ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinytheme("darkly"),
                  tabPanel("Overview",
-                          h3("Data"),
-                          
-                          p("We used two precipitation climate reanalysis datasets",
-                            a(href = 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim',
-                              'ERA '), "and ",
-                            a(href = 'http://www.cesm.ucar.edu/projects/community-projects/LENS/',
-                              'CESM-LENS'),
-                            ". ERA has resolution of (fix this)km and CESM-LENS has resolution of ()km"),
-                          h3("Approach"),
-                          p("For this project, we chose to make a Shiny App (located in the `Shiny App` tab. 
+                          fluidPage(
+                            mainPanel(
+                              h2("Welcome to the CliMates Data Dashboard!"),
+                              p("This is a part of the ASA ENVR Section Data Challenge 2020."),
+                              p("You can find our code and full report on our",
+                                a(href = 'https://github.com/OSUCliMates', 'github')," page"),
+                              br(),
+                              h3("About Us"),
+                              p("We are a team from Oregon State University, so it's no
+                              surprise that we are interested
+                                in precipitation. If that's not your thing, have no fear! 
+                                This data dashboard is a proof 
+                                of concept. There is a steep learning curve to examining large and 
+                                complex data sets, and 
+                                in the spirit of 2020, we'd like to flatten that curve."),
+                              br(),
+                              p("In the next tab you'll see an
+                                interactive tool for investigating two large data sets. We hope it lets
+                                you bypass some of the initial drudgery of data cleaning and wrangling,
+                                and just get a good look 
+                                at the data. Have some fun! Play around. See if you can find anything 
+                                that surprises you."),
+                              br(),
+                              h3("About the datasets"),
+                              h5(" CESM Large Ensemble Community Project (CESM-LENS)"),
+                              p("We used two precipitation climate reanalysis datasets",
+                        a(href = 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim',
+                                  'ERA '), "and ",
+                                a(href = 'http://www.cesm.ucar.edu/projects/community-projects/LENS/',
+                                  'CESM-LENS'),
+                                ". ERA has resolution of (fix this)km and CESM-LENS has resolution of ()km"),
+                              
+                              h5("ERA - Interim"),
+                              p("describe here :) "),
+                              br(),
+                              h3("Acknowledgements"),
+                              p("advisors + data set creators + contest creators?
+                              do advisors go with About Us or are they not
+                              technically the team?")
+                              ),
+                            
+                            h3("App Overview - Insert a sort of simple 'How to' of using the app"),
+                            p("For this project, we chose to make a Shiny App (located in the `Shiny App` tab. 
                             To use this app, select a state of interest, and then click and drag a box around 
                             your location of interest. Once you have selected an area, click go."),
-                          p(" You can also click `Click here to make a comparison` to compare to a different selected
-                            area."),
-                          p("Find the code used to analyze the data and create this app, as well 
-                            as our full report on our",
-                            a(href = 'https://github.com/OSUCliMates', 'github')," page")
-                 ),
-                 
-                 tabPanel("Shiny App: (better title here)",
-                 
-                 
+                            p(" You can also click `Click here to make a comparison` to compare to a 
+                            different selected
+                            area.")
+                            )
+                          ),
+                 tabPanel("The Data",
                  fluidPage(
                    sidebarLayout(
                      # Side bar for selection choices 
@@ -69,9 +97,9 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge",
       actionButton(inputId = "reset",
                    label = "Reset Zoom",
                    class = "btn-sm")),
-      actionButton(inputId = "go",
-                   label = "Go - See your results!",
-                   class="btn-primary btn-block"),
+      # actionButton(inputId = "go", ##################################### moved so that it shows up below
+      #              label = "Go - See your results!",#####################
+      #              class="btn-primary btn-block"),####################### the conditional panel
       # following is for the comparison map
       checkboxInput(inputId = "comparison_checkbox",
                     label = "Compare to a different location"),
@@ -98,30 +126,67 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge",
         actionButton(inputId = "reset2",
                      label = "Reset Zoom",
                      class = "btn-sm")
-      )
-
-
-      
+      ),
+      actionButton(inputId = "go", ###################################### New Location
+                   label = "Go - See your results!",
+                   class="btn-primary btn-block")
       
       ),
     mainPanel(
-  # Output: Tabset
-  # Different tabs where we can put our stuff. 
-  tabsetPanel(type = "tabs",
+
+  tabsetPanel(type = "tabs", 
+              tabPanel("Model Variability", #smither8
+                       h3("A Look Into The CESM-LENS Ensemble Members"),
+                       p("The CESM-LENS data set comes from a large ensemble model.
+                       The goal is to be able to distinguish 
+                       between model error and internal climate variability."),
+                       p("Here we attempt to highlight that distinction
+                         by investigating how different the model members are from each other over time. The data were
+                         first reduced by calculating average precipitation for each day of the year in groupings of decades.
+                         Then, the range of those values was calculated and used as a proxy for
+                         variability between members over time."),
+                         p("As you choose areas of interest you can see how
+                         those ranges increase and decrease during different parts of the year, and if they change in 
+                         different ways throughout different decades."),
+                       h4("Area #1"),
+                       withSpinner(
+                         plotOutput("ranges_smooth")),
+                       conditionalPanel(
+                         h4("Area #2"),
+                         condition = "input.comparison_checkbox == true",
+                         withSpinner(plotOutput("comp_ranges_smooth"))
+                       ),
+                       h4("Area #1 Boxplot"),
+                       withSpinner(
+                         plotOutput("ranges_box")),
+                       conditionalPanel(
+                         h4("Area #2 Boxplot"),
+                         condition = "input.comparison_checkbox == true",
+                         withSpinner(plotOutput("comp_ranges_box"))
+                       )
+              ),
+
               
+              #########
               
-              
-             tabPanel("smither8",
-              titlePanel("Choose an Area of Interest"),
-              sidebarLayout(
-              sidebarPanel(
-              helpText("Use your cursor to select a rectangle on the map. \n "),
-              plotOutput("shp_map", hover = "hov", brush= "brus"),
-              tableOutput("hov_info")),
-              mainPanel(
-              tableOutput("brus_info"),
-              plotOutput("insert_any_plot")))
-             ),
+              # tabPanel("Seasonal Precipitation Deviation",
+              #          h3("Deviation from average seasonal rainfall"),
+              #          # Plot 1: 
+              #          #plotOutput(outputId = "precip_deviation_plot"),
+              #          withSpinner(plotOutput(outputId = "precip_deviation_plot")),
+              #          checkboxInput(inputId = "baseline",
+              #                        label = "Compare to United States baseline",
+              #                        value = TRUE),
+              #          withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
+              #          p("Description:"),
+              #          h3("Precipitation Strips"),
+              #          # Plot 2: 
+              #          
+              #          withSpinner(plotOutput(outputId = "precip_strips")),
+              #          p("These cvide")
+              #          
+              # )
+              ###############
              tabPanel("Decadal Cumulative Precipitation",#stay cool chief
                       #sliderInput("lat", label = h3("Latitude"), min = 24, 
                       #                 max = 50, value = c(41,47)),
