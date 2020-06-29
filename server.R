@@ -201,7 +201,7 @@ server <- function(input, output) {
       # Initialize with overall US value
       if(input$go == 0){
         #return(monthly_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
-        return(seasonal_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
+        return(seasonal_precip_deviation(us_deviation)) # + ggtitle("Select points and click go"))
         }
       # If selection clears show US value
       if(is_empty()){
@@ -237,7 +237,7 @@ server <- function(input, output) {
       #if(is_empty()){return(err_plot)}
       if(input$go == 0){
         #return(monthly_strips(us_deviation) + ggtitle("Select points and click go"))
-        return(seasonal_strips(us_deviation) + ggtitle("Select points and click go"))
+        return(seasonal_strips(us_deviation)) #+ ggtitle("Select points and click go"))
       }
       # If selection clears show US value
       if(is_empty()){
