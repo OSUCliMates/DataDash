@@ -284,7 +284,7 @@ server <- function(input, output) {
         return(seasonal_strips(us_deviation))
       }
       seasonal_strips(precip_deviation_data())
-      monthly_strips(precip_deviation_data())
+      #monthly_strips(precip_deviation_data())
     })
     
 

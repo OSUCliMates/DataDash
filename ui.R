@@ -14,7 +14,33 @@ source("setup_plot_maps.R", local=FALSE)
 #       helpText("Drag a rectangle to select an area to examine, then click go"),
 #       selectInput(inputId = "state",
 
-ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsible = TRUE, inverse = TRUE, theme = shinytheme("darkly"),
+ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge",
+                 collapsible = TRUE, inverse = TRUE, theme = shinytheme("darkly"),
+                 
+                 
+                 tabPanel("Overview",
+                          h3("Data"),
+                          
+                          p("We used two precipitation climate reanalysis datasets",
+                            a(href = 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim',
+                              'ERA '), "and ",
+                            a(href = 'http://www.cesm.ucar.edu/projects/community-projects/LENS/',
+                              'CESM-LENS'),
+                            ". ERA has resolution of (fix this)km and CESM-LENS has resolution of ()km"),
+                          h3("Approach"),
+                          p("For this project, we chose to make a Shiny App (located in the `Shiny App` tab. 
+                            To use this app, select a state of interest, and then click and drag a box around 
+                            your location of interest. Once you have selected an area, click go."),
+                          p(" You can also click `Click here to make a comparison` to compare to a different selected
+                            area."),
+                          p("Find the code used to analyze the data and create this app, as well 
+                            as our full report on our",
+                            a(href = 'https://github.com/OSUCliMates', 'github')," page")
+                 ),
+                 
+                 tabPanel("Shiny App: (better title here)",
+                 
+                 
                  fluidPage(
                    sidebarLayout(
                      # Side bar for selection choices 
@@ -83,13 +109,7 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
   # Different tabs where we can put our stuff. 
   tabsetPanel(type = "tabs",
               
-              tabPanel("Overview",
-                       h3("just trying to start up an outline - plz add stuff"),
-                       h3("About the datasets"),
-                       p("We used two climate reanalysis datasets, ERA and CESM-LENS"),
-                       h3("We chose precipitation data"),
-                       p("Find our code and full report on our", a(href = 'https://github.com/OSUCliMates', 'github')," page")
-                       ),
+              
               
              tabPanel("smither8",
               titlePanel("Choose an Area of Interest"),
@@ -124,7 +144,8 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
                          sidebarPanel(
                            # Slider for range of years
                            div(style="font-size:20px;",
-                               sliderInput(inputId = "Year", label="Years of interest", min=1979, max=2017, value=c(1979, 1985), sep=""))
+                               sliderInput(inputId = "Year", label="Years of interest",
+                                           min=1979, max=2017, value=c(1979, 1985), sep=""))
                          ),
                          mainPanel(
                            tags$h3("ERA Interim Station Locations"),
@@ -143,15 +164,16 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
               ),
               
               tabPanel("Seasonal Precipitation Deviation",
-                       h3("Deviation from average seasonal rainfall"),
+                       h3("Deviation from average seasonal rainfall - Using ERA data"),
                        # Plot 1: 
                        #plotOutput(outputId = "precip_deviation_plot"),
                        withSpinner(plotOutput(outputId = "precip_deviation_plot")),
                        checkboxInput(inputId = "baseline",
                                      label = "Compare to United States baseline",
                                      value = TRUE),
-                      withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
-                       p("Description: We see that for many locations that summer months have less deviation from averages
+                      #withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
+                       p("Description: We see that for many locations that summer months
+                       have less deviation from averages
                        Positive values indicate that year was wetter than normal,
                          negative values indicate drier than normal."),
                        h3("Precipitation Strips"),
@@ -159,7 +181,8 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
                        
                        withSpinner(plotOutput(outputId = "precip_strips")),
                        p("These color strips show when the selected location is wetter (green) or dryer (brown) 
-                         then average - Comparison to overall United States included. Often we see periods of drought that are evident in the entire US as well")
+                         then average - Comparison to overall United States included. Often we see periods of
+                         drought that are evident in the entire US as well")
                        
               )
   )
@@ -168,6 +191,7 @@ ui <- navbarPage("Data Dashboard for ASA ENVR Section Data Challenge", collapsib
   )
 )
 
+)
 )
 
 

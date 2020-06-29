@@ -152,8 +152,8 @@ seasonal_strips <- function(data){
     data %>%
         ggplot() +
         geom_tile(aes(x = as.Date(quarter_date), y = 1,fill = mean_deviation)) +
-        scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
         facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
+        scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
         scale_x_date() + 
         labs(x = "",y = "") +
         guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
