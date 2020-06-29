@@ -135,7 +135,7 @@ seasonal_precip_deviation <- function(data){
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
               legend.title = element_blank()) +
-        labs(x = "Year",y = expression(drier %<->% wetter))
+        labs(x = "Year",y = expression(paste("Percent deviation from seasonal precip average (", drier %<->% wetter ,")")))
 }
 
 
@@ -178,7 +178,8 @@ seasonal_strips <- function(data){
               panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
               panel.spacing = unit(-.5, "lines"),
-              panel.grid = element_blank()) 
+              panel.grid.major.x = element_blank(),
+              panel.grid.major.y = element_blank()) 
 }
 
 

@@ -136,6 +136,12 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
 
   tabsetPanel(type = "tabs", 
               tabPanel("Model Variability", #smither8
+                       conditionalPanel(
+                         condition  = "input.go == 0",
+                         h3("Please select a location in the sidebar and click 'Go' ")
+                       ),
+                       conditionalPanel(
+                         condition = "input.go != 0",
                        h3("A Look Into The CESM-LENS Ensemble Members"),
                        p("The CESM-LENS data set comes from a large ensemble model.
                        The goal is to be able to distinguish 
@@ -163,6 +169,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          h4("Area #2 Boxplot"),
                          condition = "input.comparison_checkbox == true",
                          withSpinner(plotOutput("comp_ranges_box"))
+                       )
                        )
               ),
 
@@ -192,6 +199,14 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                       #                 max = 50, value = c(41,47)),
                       #sliderInput("lon", label = h3("Longitude"), min = -125, 
                       #                 max = -66, value = c(-125,-116)),
+                      
+                      conditionalPanel(
+                        condition  = "input.go == 0",
+                        h3("Please select a location in the sidebar and click 'Go' ")
+                      ),
+                      conditionalPanel(
+                        condition = "input.go != 0",
+                      
                       br(),
                       plotOutput("sawtooth"),
                       hr(),
@@ -199,10 +214,17 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                         condition = "input.comparison_checkbox == true",
                         plotOutput("comp_sawtooth")
                       )
+                      )
                       #plotOutput("ref_map")
              ),
 
               tabPanel("Yearly - ",
+                       conditionalPanel(
+                         condition  = "input.go == 0",
+                         h3("Please select a location in the sidebar and click 'Go' ")
+                       ),
+                       conditionalPanel(
+                         condition = "input.go != 0",
                        titlePanel("Precipitation in Oregon - Quadrant/Year Comparison Tool"),
                        
                        sidebarLayout(
@@ -226,28 +248,36 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        tags$h3("Variability of total monthly precipitation by year"),
                        plotOutput(outputId = "VarPlot")
                        #Jess put  the stuff you're working on in here
+                       )
               ),
               
               tabPanel("Seasonal Precipitation Deviation",
-                       h3("Deviation from average seasonal rainfall - Using ERA data"),
+                       conditionalPanel(
+                         condition  = "input.go == 0",
+                         h3("Please select a location in the sidebar and click 'Go' ")
+                       ),
+                       
+                       
+                       conditionalPanel(
+                         condition = "input.go != 0",
+                       h3("Percent deviation from average seasonal precipitation - Using ERA data"),
                        # Plot 1: 
                        #plotOutput(outputId = "precip_deviation_plot"),
+                       p(" For the entire United States, recent years have been
+                       drier than average across all seasons - many smaller selections show this trend too.
+                      For many locations, summer months have a lower range in percent deviance."),
                        withSpinner(plotOutput(outputId = "precip_deviation_plot")),
                        checkboxInput(inputId = "baseline",
-                                     label = "Compare to United States baseline",
+                                     label = "Compare to United States average",
                                      value = TRUE),
-                      #withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
-                       p("Description: We see that for many locations that summer months
-                       have less deviation from averages
-                       Positive values indicate that year was wetter than normal,
-                         negative values indicate drier than normal."),
                        h3("Precipitation Strips"),
                        # Plot 2: 
+                      p("Each strip shows the percent deviation from average seasonal values
+                      (wetter = green,  dryer = brown) . We often see drier periods lasting longer than a season -
+                      and these can often be seen in different locations. Often we see periods of
+                         drought that are evident in the entire US as well."),
+                       withSpinner(plotOutput(outputId = "precip_strips"))),
                        
-                       withSpinner(plotOutput(outputId = "precip_strips")),
-                       p("These color strips show when the selected location is wetter (green) or dryer (brown) 
-                         then average - Comparison to overall United States included. Often we see periods of
-                         drought that are evident in the entire US as well")
                        
               )
   )
