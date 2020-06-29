@@ -123,7 +123,7 @@ seasonal_precip_deviation <- function(data){
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
               legend.title = element_blank()) +
-        labs(x = "Year",y = expression(dryer %<->% wetter))
+        labs(x = "Year",y = expression(drier %<->% wetter))
 }
 
 
@@ -144,7 +144,7 @@ monthly_precip_deviation <- function(data){
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
               legend.title = element_blank()) +
-        labs(x = "Year", y = expression(dryer %<->% wetter))
+        labs(x = "Year", y = expression(drier %<->% wetter))
 }
 
 
@@ -156,7 +156,7 @@ seasonal_strips <- function(data){
         facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
         scale_x_date() + 
         labs(x = "",y = "") +
-        guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
+        guides(fill = guide_colorbar(title = expression(wetter %<->% drier),
                                      title.position = "right",
                                      title.theme = element_text(angle = 270))) +
         theme_dd() +
@@ -178,7 +178,7 @@ monthly_strips <- function(data){
         facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
         scale_x_date() + 
         labs(x = "",y = "") +
-        guides(fill = guide_colorbar(title = expression(wetter %<->% dryer),
+        guides(fill = guide_colorbar(title = expression(wetter %<->% drier),
                                      title.position = "right",
                                      title.theme = element_text(angle = 270))) +
         theme_dd() +
