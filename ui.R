@@ -4,36 +4,68 @@ source("setup_plot_sawtooth.R", local=FALSE)
 source("setup_plot_maps.R", local=FALSE)
 source("setup_plot_ranges.R", local=FALSE)
 
+
+# ui <- fluidPage(
+#   titlePanel("Data Dashboard for ASA ENVR Section Data Challenge"),
+#   
+#   
+#   sidebarLayout(
+#     # Side bar for selection choices 
+#     sidebarPanel(
+#       # perhaps include a checkbox ERA/CESMLENS dataset here?
+#       helpText("Drag a rectangle to select an area to examine, then click go"),
+#       selectInput(inputId = "state",
+
 ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinytheme("darkly"),
                  tabPanel("Overview",
                           fluidPage(
                             mainPanel(
                               h2("Welcome to the CliMates Data Dashboard!"),
                               p("This is a part of the ASA ENVR Section Data Challenge 2020."),
-                              p("You can find our code and full report on our", a(href = 'https://github.com/OSUCliMates', 'github')," page"),
+                              p("You can find our code and full report on our",
+                                a(href = 'https://github.com/OSUCliMates', 'github')," page"),
                               br(),
                               h3("About Us"),
-                              p("We are a team from Oregon State University, so it's no surprise that we are interested
-                                in precipitation. If that's not your thing, have no fear! This data dashboard is a proof 
-                                of concept. There is a steep learning curve to examining large and complex data sets, and 
+                              p("We are a team from Oregon State University, so it's no
+                              surprise that we are interested
+                                in precipitation. If that's not your thing, have no fear! 
+                                This data dashboard is a proof 
+                                of concept. There is a steep learning curve to examining large and 
+                                complex data sets, and 
                                 in the spirit of 2020, we'd like to flatten that curve."),
                               br(),
                               p("In the next tab you'll see an
-                                interactive tool for investigating two large data sets. We hope it lets you bypass
-                                some of the initial drudgery of data cleaning and wrangling, and just get a good look 
-                                at the data. Have some fun! Play around. See if you can find anything that surprises you."),
+                                interactive tool for investigating two large data sets. We hope it lets
+                                you bypass some of the initial drudgery of data cleaning and wrangling,
+                                and just get a good look 
+                                at the data. Have some fun! Play around. See if you can find anything 
+                                that surprises you."),
                               br(),
                               h3("About the datasets"),
                               h5(" CESM Large Ensemble Community Project (CESM-LENS)"),
-                              p("We used two climate reanalysis datasets, ERA and CESM-LENS"),
+                              p("We used two precipitation climate reanalysis datasets",
+                        a(href = 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim',
+                                  'ERA '), "and ",
+                                a(href = 'http://www.cesm.ucar.edu/projects/community-projects/LENS/',
+                                  'CESM-LENS'),
+                                ". ERA has resolution of (fix this)km and CESM-LENS has resolution of ()km"),
                               
                               h5("ERA - Interim"),
                               p("describe here :) "),
                               br(),
                               h3("Acknowledgements"),
-                              p("advisors + data set creators + contest creators? do advisors go with About Us or are they not
+                              p("advisors + data set creators + contest creators?
+                              do advisors go with About Us or are they not
                               technically the team?")
-                              )
+                              ),
+                            
+                            h3("App Overview - Insert a sort of simple 'How to' of using the app"),
+                            p("For this project, we chose to make a Shiny App (located in the `Shiny App` tab. 
+                            To use this app, select a state of interest, and then click and drag a box around 
+                            your location of interest. Once you have selected an area, click go."),
+                            p(" You can also click `Click here to make a comparison` to compare to a 
+                            different selected
+                            area.")
                             )
                           ),
                  tabPanel("The Data",
@@ -101,10 +133,12 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
       
       ),
     mainPanel(
+
   tabsetPanel(type = "tabs", 
               tabPanel("Model Variability", #smither8
                        h3("A Look Into The CESM-LENS Ensemble Members"),
-                       p("The CESM-LENS data set comes from a large ensemble model. The goal is to be able to distinguish 
+                       p("The CESM-LENS data set comes from a large ensemble model.
+                       The goal is to be able to distinguish 
                        between model error and internal climate variability."),
                        p("Here we attempt to highlight that distinction
                          by investigating how different the model members are from each other over time. The data were
@@ -131,6 +165,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          withSpinner(plotOutput("comp_ranges_box"))
                        )
               ),
+
               
               #########
               
@@ -174,7 +209,8 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          sidebarPanel(
                            # Slider for range of years
                            div(style="font-size:20px;",
-                               sliderInput(inputId = "Year", label="Years of interest", min=1979, max=2017, value=c(1979, 1985), sep=""))
+                               sliderInput(inputId = "Year", label="Years of interest",
+                                           min=1979, max=2017, value=c(1979, 1985), sep=""))
                          ),
                          mainPanel(
                            tags$h3("ERA Interim Station Locations"),
@@ -193,23 +229,25 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
               ),
               
               tabPanel("Seasonal Precipitation Deviation",
-                       h3("Deviation from average seasonal rainfall"),
+                       h3("Deviation from average seasonal rainfall - Using ERA data"),
                        # Plot 1: 
                        #plotOutput(outputId = "precip_deviation_plot"),
                        withSpinner(plotOutput(outputId = "precip_deviation_plot")),
                        checkboxInput(inputId = "baseline",
                                      label = "Compare to United States baseline",
                                      value = TRUE),
-                      withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
-                       p("Description: We see that for many locations that summer months have less deviation from averages
+                      #withSpinner(plotOutput(outputId = "yearly_precip_deviation")),
+                       p("Description: We see that for many locations that summer months
+                       have less deviation from averages
                        Positive values indicate that year was wetter than normal,
                          negative values indicate drier than normal."),
                        h3("Precipitation Strips"),
                        # Plot 2: 
                        
                        withSpinner(plotOutput(outputId = "precip_strips")),
-                       p("These color strips show when the selected location is wetter (green) or drier (brown) 
-                         then average - Comparison to overall United States included. Often we see periods of drought that are evident in the entire US as well")
+                       p("These color strips show when the selected location is wetter (green) or dryer (brown) 
+                         then average - Comparison to overall United States included. Often we see periods of
+                         drought that are evident in the entire US as well")
                        
               )
   )
@@ -219,5 +257,6 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
 )
 
 )
-
 )
+
+
