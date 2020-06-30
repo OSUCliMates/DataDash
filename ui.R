@@ -205,7 +205,12 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          
                          h3("Annual cumulative precipitation by decade"),
                          p("Cumulative precipitation for each given calendar day, averaged across the selected pixels,  
-                           and across all years in each given decade."),
+                           and across all years in each given decade. The time axis begins on October 1st, which is the
+                           beginning of a water year, as defined by the United States Geological Survey. Zooming in to
+                           the end of the cumulative precipitation plot demonstrates trend in precipitation since 1920, 
+                           which varies by location. For instance, in Oregon precipitatin has been decreasing, while in 
+                           New Mexico it has been increasing."),
+                         br(),
                          p("To zoom in, click and drag to select an area, then double click the selected area. 
                            To reset zoom, double click anywhere."),
                          plotOutput("sawtooth",
