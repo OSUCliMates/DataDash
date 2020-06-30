@@ -57,7 +57,7 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
                        ylim = bounding_box$lat_range) +
         scale_shape_discrete(labels=c("ERA", "CESM-LENS"))+
         labs(shape = "Data set",
-             title = "Station/Observation Locations") +
+             title = "Observation Locations") +
         theme_dd() +
         theme(axis.text = element_blank(),
               axis.title = element_blank(),
@@ -73,13 +73,14 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
 
 
 get_precip_deviation_data <- function(selected_points, data_choice){
+  points <- selected_points %>% filter(dataset == "era")
     precip_deviation %>% 
         filter(between(lon,
-                       selected_points$min_lon[1], # first entry is era, second is lens
-                       selected_points$max_lon[1]),
+                       ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
+                       ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon)),
                between(lat,
-                       selected_points$min_lat[1],
-                       selected_points$max_lat[1])) %>% 
+                       ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
+                       ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>% 
         #group_by(month_date) %>% 
         #mutate(percent_deviation = diff_from_prec_mean/overall_prec_mean) %>%
         group_by(quarter_date,season) %>%
@@ -116,11 +117,14 @@ get_us_precip_deviation <- function(){
 }
 
 
-seasonal_precip_deviation <- function(data, compare = FALSE){
+seasonal_precip_deviation <- function(data, compare = FALSE, empty = FALSE){
   if(compare){
     pal <- c("#440154FF","#1F968BFF","grey")
   }else{
     pal <- c("#440154FF","grey")
+  }
+  if(empty){
+    pal <- c("grey")
   }
     data %>%
         ggplot() +
@@ -131,7 +135,7 @@ seasonal_precip_deviation <- function(data, compare = FALSE){
         scale_x_date() +
         scale_y_continuous(labels = scales::percent,n.breaks = 3) +
         scale_color_manual(values = pal)+
-        facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")))+
+        facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")),ncol = 1)+
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
