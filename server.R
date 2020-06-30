@@ -292,7 +292,7 @@ server <- function(input, output) {
       # If selection clears show US value
       if(is_empty()){
         #return(monthly_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
-        return(seasonal_precip_deviation(us_deviation))
+        return(seasonal_precip_deviation(us_deviation,empty = TRUE))
         }
       # Plot with selections
       #monthly_precip_deviation(precip_deviation_data())

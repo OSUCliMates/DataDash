@@ -117,11 +117,14 @@ get_us_precip_deviation <- function(){
 }
 
 
-seasonal_precip_deviation <- function(data, compare = FALSE){
+seasonal_precip_deviation <- function(data, compare = FALSE, empty = FALSE){
   if(compare){
     pal <- c("#440154FF","#1F968BFF","grey")
   }else{
     pal <- c("#440154FF","grey")
+  }
+  if(empty){
+    pal <- c("grey")
   }
     data %>%
         ggplot() +
@@ -132,7 +135,7 @@ seasonal_precip_deviation <- function(data, compare = FALSE){
         scale_x_date() +
         scale_y_continuous(labels = scales::percent,n.breaks = 3) +
         scale_color_manual(values = pal)+
-        facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")))+
+        facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")),ncol = 1)+
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
