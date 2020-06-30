@@ -203,13 +203,22 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        conditionalPanel(
                          condition = "input.go != 0",
                          
-                         br(),
+                         h3("Annual cumulative precipitation by decade"),
+                         p("Cumulative rainfall for each given calendar day, averaged across the selected pixels, 
+                           and across all years in each given decade."),
                          plotOutput("sawtooth"),
+                         h3("Decadal average rainfall"),
+                         p("To save computation time, this plot is just the numeric derivative of the abovce plot.
+                           It shows what times of year have the most and least precipitation. These time series
+                           tend to be a bit noisy, but when looked at together, precipitation patterns emerge.
+                           When is your area's \"rainy season\"?"),
                          plotOutput("num_der"),
                          hr(),
                          conditionalPanel(
                            condition = "input.comparison_checkbox == true",
+                           h3("Annual cumulative precipitation by decade"),
                            plotOutput("comp_sawtooth"),
+                           h3("Decadal average rainfall"),
                            plotOutput("comp_num_der")
                          )
                        )
@@ -232,7 +241,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                                            min=1979, max=2017, value=c(1979, 1985), sep=""))
                          ),
                          mainPanel(
-                           tags$h3("ERA Interim Station Locations"), 
+                           tags$h3("ERA Interim Station Locations"),
                            plotOutput(outputId = "mPlot", brush="selection1", width="80%")
                          )),
                        
