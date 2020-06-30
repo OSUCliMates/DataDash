@@ -116,20 +116,21 @@ get_us_precip_deviation <- function(){
 }
 
 
-seasonal_precip_deviation <- function(data){
+seasonal_precip_deviation <- function(data, compare = FALSE){
+  if(compare){
+    pal <- c("#440154FF","#1F968BFF","grey")
+  }else{
+    pal <- c("#440154FF","grey")
+  }
     data %>%
-        #precip_deviation_test %>% mutate(month = lubridate::month(month_date),data_choice = "one") %>%# dataset for testing 
         ggplot() +
         geom_hline(yintercept = 0,linetype = "dashed") +
         geom_line(aes(x = as.Date(quarter_date), y = avg_perc_dev,#y = mean_deviation,
                       group = data_choice,
-                      color = data_choice))+
-        #geom_ribbon(aes(x = as.Date(quarter_date),ymin = mean_deviation, ymax = 0,
-        #              group = data_choice,
-        #              fill = data_choice),alpha = .6)+
+                      color = data_choice),size = 1.5)+
         scale_x_date() +
         scale_y_continuous(labels = scales::percent,n.breaks = 3) +
-        scale_fill_viridis(discrete = TRUE) +
+        scale_color_manual(values = pal)+
         facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")))+
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
