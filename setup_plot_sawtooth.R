@@ -15,7 +15,7 @@ longitudes <- unique(gbg$lon)
 remove(gbg)
 
 #This function needs the following data frame to run:
-decadal_average_cumulative_prec_waveforms <- readRDS("/home/ST505/precalculated_data/yearly_cumulative_prec.rds")
+decadal_average_cumulative_prec_waveforms <- readRDS("Data/yearly_cumulative_prec.rds")
 
 #use ggplot to make an error message
 err_plot <- ggplot()+
