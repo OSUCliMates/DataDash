@@ -145,7 +145,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        h3("A Look Into The CESM-LENS Ensemble Members"),
                        p("The CESM-LENS data set comes from a large ensemble model.
                        The goal is to be able to distinguish 
-                       between model error and internal climate variability."),
+                       between climate change and internal climate variability."),
                        p("Here we attempt to highlight that distinction
                          by investigating how different the model members are from each other over time. The data were
                          first reduced by calculating average precipitation for each day of the year in groupings of decades.

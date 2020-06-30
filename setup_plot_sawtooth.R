@@ -19,7 +19,10 @@ decadal_average_cumulative_prec_waveforms <- readRDS("/home/ST505/precalculated_
 
 #use ggplot to make an error message
 err_plot <- ggplot()+
-  annotate(geom="text",y=1,x=1,label="Oops! It looks like there weren't any raster pixels in your window. Please try a larger window.")+
+  annotate(geom="text",y=1,x=1,label=
+             "Oops! Your selection doesn't have any Station Locations in it.
+           Please drag and drop on the sidebar map again to make a selection that covers one or more of the points.", 
+           size=5)+
   theme_void()
 
 lat_min <- latitudes[6]
