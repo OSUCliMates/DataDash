@@ -308,10 +308,57 @@ server <- function(input, output) {
     ####################################################
 
     
-    
     # JessRoseRobbieJo
+    ####################################################
     
-     VarPlotData <- eventReactive(c(input$go, input$Year), {
+    Select1 <- eventReactive(c(input$go, input$Year), {
+      BigDF %>%
+        filter(between(lon,
+                       selected_points()$min_lon[1],
+                       selected_points()$max_lon[1]),
+               between(lat,
+                       selected_points()$min_lat[1],
+                       selected_points()$max_lat[1])) %>%
+        filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
+        group_by(locat, Year, Month) %>%
+        summarise(TotMoPrecipByLocat=sum(PREC)) %>%      # Total precip for month, by station
+        group_by(Year, Month) %>%
+        summarise(AveTotMoPrecip = mean(TotMoPrecipByLocat)) %>%
+        group_by(Year) %>%
+        summarise(varTotPrecip = var(AveTotMoPrecip)) %>%
+        mutate(Selection = paste("Selection 1 - ", input$state))
+    })
+    
+    Select2 <- eventReactive(c(input$go, input$Year), {
+      if(input$comparison_checkbox){
+        BigDF %>%
+          filter(between(lon,
+                         selected_points_compare()$min_lon[1],
+                         selected_points_compare()$max_lon[1]),
+                 between(lat,
+                         selected_points_compare()$min_lat[1],
+                         selected_points_compare()$max_lat[1])) %>%
+          filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
+          group_by(locat, Year, Month) %>%
+          summarise(TotMoPrecipByLocat=sum(PREC)) %>%      # Total precip for month, by station
+          group_by(Year, Month) %>%
+          summarise(AveTotMoPrecip = mean(TotMoPrecipByLocat)) %>%
+          group_by(Year) %>%
+          summarise(varTotPrecip = var(AveTotMoPrecip)) %>%
+          mutate(Selection = paste("Selection 2 - ", input$comparison_state))
+      }
+    })
+    
+     VarPlotData <- eventReactive(c(input$go, input$Year, input$comparison_checkbox), {
+       if(input$comparison_checkbox){
+         return(rbind(Select1(), Select2()))
+       }
+       else{
+         return(Select1())
+       }
+     })
+     
+     Select1T <- eventReactive(c(input$go, input$Year), {
        BigDF %>%
          filter(between(lon,
                         selected_points()$min_lon[1],
@@ -320,23 +367,43 @@ server <- function(input, output) {
                         selected_points()$min_lat[1],
                         selected_points()$max_lat[1])) %>%
          filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
-         group_by(Year, Month) %>%
-         summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
+         group_by(locat, Year) %>%
+         summarise(TotPrecipByLocat=sum(PREC)) %>%
+         mutate(CumuPrecipByLocat=cumsum(TotPrecipByLocat)) %>%
          group_by(Year) %>%
-         summarise(varTotPrecip = var(TotMoPrecip))
+         summarise(AveTotYrPrecip = mean(TotPrecipByLocat),
+                   AveCumuPrecip = mean(CumuPrecipByLocat)) %>%
+         mutate(Selection = paste("Selection 1 - ", input$state))
      })
+     
+     Select2T <- eventReactive(c(input$go, input$Year), {
+       if(input$comparison_checkbox){
+         BigDF %>%
+           filter(between(lon,
+                          selected_points_compare()$min_lon[1],
+                          selected_points_compare()$max_lon[1]),
+                  between(lat,
+                          selected_points_compare()$min_lat[1],
+                          selected_points_compare()$max_lat[1])) %>%
+           filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
+           group_by(locat, Year) %>%
+           summarise(TotPrecipByLocat=sum(PREC)) %>%
+           mutate(CumuPrecipByLocat=cumsum(TotPrecipByLocat)) %>%
+           group_by(Year) %>%
+           summarise(AveTotYrPrecip = mean(TotPrecipByLocat),
+                     AveCumuPrecip = mean(CumuPrecipByLocat)) %>%
+           mutate(Selection = paste("Selection 2 - ", input$comparison_state))
+       }
+       })
     
-    TotPlotData <- eventReactive(c(input$go, input$Year), {BigDF %>%
-        filter(between(lon,
-                       selected_points()$min_lon[1], 
-                       selected_points()$max_lon[1]),
-               between(lat,
-                       selected_points()$min_lat[1],
-                       selected_points()$max_lat[1])) %>%
-        filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
-        group_by(Year) %>%
-        summarise(TotYrPrecip=sum(PREC)) %>%
-        mutate(CumuPrecip = cumsum(TotYrPrecip))})
+    TotPlotData <- eventReactive(c(input$go, input$Year, input$comparison_checkbox), {
+      if(input$comparison_checkbox){
+        return(rbind(Select1T(), Select2T()))
+      }
+      else{
+        return(Select1T())
+      }
+    })
 
    xAxisTicks <- eventReactive(c(input$go, input$Year), {
      # If number of years plotted is odd, the last label will occur before the last plotted point, so
@@ -364,19 +431,21 @@ server <- function(input, output) {
       xAxisTicks()
       TotPlotData()
       ggplot(TotPlotData())+
-         geom_line(aes(x=Year, y=TotYrPrecip), group=1, size=0.8)+
-         labs(y="Total yearly precipitation (m)")+
-         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-         theme(text = element_text(size=20))+
-         theme_dd()
+        geom_line(aes(x=Year, y=AveTotYrPrecip, color=Selection, group=Selection), size=1.5)+
+        labs(y="Total yearly precipitation (m)")+
+        scale_color_manual(values=c("#440154FF","#1F968BFF"))+
+        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+        theme(text = element_text(size=20))+
+        theme_dd()
    })
    
     output$VarPlot <- renderPlot({
       xAxisTicks()
       VarPlotData()
       ggplot(VarPlotData())+
-        geom_line(aes(x=Year, y=varTotPrecip))+
+        geom_line(aes(x=Year, y=varTotPrecip, color=Selection, group=Selection), size=1.5)+
         labs(y="Variance in Total Monthly Precipitation (m)")+
+        scale_color_manual(values=c("#440154FF","#1F968BFF"))+
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
         theme(text = element_text(size=19))+
         theme_dd()
@@ -386,8 +455,9 @@ server <- function(input, output) {
       TotPlotData()
       xAxisTicks()
       ggplot(TotPlotData())+
-        geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
+        geom_line(aes(x=Year, y=AveCumuPrecip, color=Selection, group=Selection), size=1.5)+
         labs(y="Cumulative precipitation (m)")+
+        scale_color_manual(values=c("#440154FF","#1F968BFF"))+
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
         theme(text = element_text(size=20))+
         theme_dd()
