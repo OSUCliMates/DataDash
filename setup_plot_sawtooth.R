@@ -42,7 +42,7 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
   #After checking to make sure that there were raster points selected, this code runs
   if(ndat==0){err_plot}else{
     #generate cumulative rainfall (sawtooth) aggregate plots
-    p1 <- dat%>%
+    dat%>%
       group_by(water_day,decade)%>%
       summarise(cum_prec = mean(avg_cumulative_prec))%>%
       ggplot()+
@@ -56,10 +56,25 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
         breaks=c(1,62,124,183,244,305),
         labels=c("Oct 1","Dec 1","Feb 1","Apr 1","Jun 1","Aug 1")
       )
+  }
+}
 
-      
-    #generate numeric derivative of the above plot
-    p2 <- dat%>%
+plot_num_der <- function(lat_min,lat_max,lon_min,lon_max){
+  #first we check to see that there were raster points selected
+  dat <- decadal_average_cumulative_prec_waveforms%>%
+    filter(latitude>=lat_min&latitude<=lat_max)%>%
+    filter(longitude>=lon_min&longitude<=lon_max)
+  ndat <- dat%>%
+    select(avg_cumulative_prec)%>%
+    summarise(n=n())%>%
+    as.numeric()
+  
+  
+  
+  #After checking to make sure that there were raster points selected, this code runs
+  if(ndat==0){ggplot()}else{
+    #generate cumulative rainfall (sawtooth) aggregate plots
+    dat%>%
       group_by(water_day,decade)%>%
       summarise(cum_prec = mean(avg_cumulative_prec))%>%
       group_by(decade)%>%
@@ -77,7 +92,5 @@ plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
         breaks=c(1,62,124,183,244,305),
         labels=c("Oct 1","Dec 1","Feb 1","Apr 1","Jun 1","Aug 1")
       )
-    
-    grid.arrange(p1,p2,nrow=2)
   }
 }

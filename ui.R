@@ -194,29 +194,79 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
               #          
               # )
               ###############
-             tabPanel("Decadal Cumulative Precipitation",#stay cool chief
+              
+              tabPanel("Decadal Cumulative Precipitation",
+                       conditionalPanel(
+                         condition  = "input.go == 0",
+                         h3("Please select a location in the sidebar and click 'Go' ")
+                       ),
+                       conditionalPanel(
+                         condition = "input.go != 0",
+                         
+                         h3("Annual cumulative precipitation by decade"),
+                         p("Cumulative precipitation for each given calendar day, averaged across the selected pixels,  
+                           and across all years in each given decade."),
+                         p("To zoom in, click and drag to select an area, then double click the selected area. 
+                           To reset zoom, double click anywhere."),
+                         plotOutput("sawtooth",
+                                    dblclick = "sawtooth_dblclick",
+                                    brush = brushOpts(
+                                      id = "sawtooth_brush",
+                                      resetOnNew = TRUE
+                                    )
+                         ),
+                         h3("Decadal average precipitation"),
+                         p("To save computation time, this plot is just the numeric derivative of the abovce plot.
+                           It shows what times of year have the most and least precipitation. These time series
+                           tend to be a bit noisy, but when looked at together, precipitation patterns emerge.
+                           When is your area's \"rainy season\"?"),
+                         p("(Plot does not zoom)"),
+                         plotOutput("num_der"),
+                         hr(),
+                         conditionalPanel(
+                           condition = "input.comparison_checkbox == true",
+                           h3("Annual cumulative precipitation by decade"),
+                           p("To zoom in, click and drag to select an area, then double click the selected area. 
+                           To reset zoom, double click anywhere."),
+                           plotOutput("comp_sawtooth",
+                                      dblclick = "sawtooth_comp_dblclick",
+                                      brush = brushOpts(
+                                        id = "sawtooth_comp_brush",
+                                        resetOnNew = TRUE
+                                      )
+                           ),
+                           h3("Decadal average rainfall"),
+                           p("(Plot does not zoom)"),
+                           plotOutput("comp_num_der")
+                         )
+                       )
+              ),
+              
+              #tabPanel("Yearly - ",
+
+              #     tabPanel("Decadal Cumulative Precipitation",#stay cool chief
                       #sliderInput("lat", label = h3("Latitude"), min = 24, 
                       #                 max = 50, value = c(41,47)),
                       #sliderInput("lon", label = h3("Longitude"), min = -125, 
                       #                 max = -66, value = c(-125,-116)),
                       
-                      conditionalPanel(
-                        condition  = "input.go == 0",
-                        h3("Please select a location in the sidebar and click 'Go' ")
-                      ),
-                      conditionalPanel(
-                        condition = "input.go != 0",
+        #              conditionalPanel(
+        #                condition  = "input.go == 0",
+        #                h3("Please select a location in the sidebar and click 'Go' ")
+        #              ),
+        #              conditionalPanel(
+        #                condition = "input.go != 0",
                       
-                      br(),
-                      plotOutput("sawtooth"),
-                      hr(),
-                      conditionalPanel(
-                        condition = "input.comparison_checkbox == true",
-                        plotOutput("comp_sawtooth")
-                      )
-                      )
-                      #plotOutput("ref_map")
-             ),
+        #              br(),
+        #              plotOutput("sawtooth"),
+        #              hr(),
+        #              conditionalPanel(
+        #                condition = "input.comparison_checkbox == true",
+        #                plotOutput("comp_sawtooth")
+        #              )
+        #              )
+        #              #plotOutput("ref_map")
+        #     ),
 
               tabPanel("Total, Accumulation, Variation Time Series",
                        conditionalPanel(
@@ -228,26 +278,38 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        titlePanel("Precipitation Time Series: Total, Accumulation, and Variation"),
                        
 
-                       # Slider for range of years
-#                       div(style="font-size:20px;",
-#                           sliderInput(inputId = "Year", label="Years of interest",
-#                                       min=1979, max=2017, value=c(1979, 1985), sep="")),
-#                       actionButton(inputId = "Ygo",
-#                                    label = "Set year",
-#                                    class="btn-primary btn-block"),
 
-                       sidebarLayout(
-                         sidebarPanel(
-                           # Slider for range of years
-                           div(style="font-size:20px;",
-                               sliderInput(inputId = "Year", label="Years of interest",
-                                           min=1979, max=2017, value=c(1979, 1985), sep=""))
-                         ),
-                         mainPanel(
-                           tags$h3("ERA Interim Station Locations"), 
-                           plotOutput(outputId = "mPlot", brush="selection1", width="80%")
-                         )),
-                       
+                       # sidebarLayout(
+                       #   sidebarPanel(
+                       #     # Slider for range of years
+                       #     div(style="font-size:20px;",
+                       #         sliderInput(inputId = "Year", label="Years of interest",
+                       #                     min=1979, max=2017, value=c(1979, 1985), sep=""))
+                       #   ),
+                       #   mainPanel(
+                       #     tags$h3("ERA Interim Station Locations"), 
+                       #     plotOutput(outputId = "mPlot", brush="selection1", width="80%")
+                       #   )),
+
+                       # Slider for range of years
+                       div(style="font-size:20px;",
+                           sliderInput(inputId = "Year", label="Years of interest",
+                                       min=1979, max=2017, value=c(1979, 1985), sep="")),
+                       actionButton(inputId = "Ygo",
+                                    label = "Set year",
+                                    class="btn-primary btn-block"),
+                  #     sidebarLayout(
+                  #       sidebarPanel(
+                  #         # Slider for range of years
+                  #         div(style="font-size:20px;",
+                  #             sliderInput(inputId = "Year", label="Years of interest",
+                  #                         min=1979, max=2017, value=c(1979, 1985), sep=""))
+                  #       ),
+                  #       mainPanel(
+                  #         tags$h3("ERA Interim Station Locations"),
+                  #         plotOutput(outputId = "mPlot", brush="selection1", width="80%")
+                  #       )),
+
                        tags$h3("Total yearly precipitation"),
                        plotOutput(outputId = "TotPlot"),
                        

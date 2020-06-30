@@ -73,13 +73,14 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
 
 
 get_precip_deviation_data <- function(selected_points, data_choice){
+  points <- selected_points %>% filter(dataset == "era")
     precip_deviation %>% 
         filter(between(lon,
-                       selected_points$min_lon[1], # first entry is era, second is lens
-                       selected_points$max_lon[1]),
+                       ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
+                       ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon)),
                between(lat,
-                       selected_points$min_lat[1],
-                       selected_points$max_lat[1])) %>% 
+                       ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
+                       ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>% 
         #group_by(month_date) %>% 
         #mutate(percent_deviation = diff_from_prec_mean/overall_prec_mean) %>%
         group_by(quarter_date,season) %>%

@@ -4,6 +4,8 @@ server <- function(input, output) {
 ########################################################  
   # K8
     
+  ranges <- reactiveValues(x=NULL, y=NULL)
+  ranges_comp <- reactiveValues(x=NULL, y=NULL)
     #first plot
     output$sawtooth <- renderPlot({
       points <- selected_points() %>% filter(dataset == "lens")
@@ -11,8 +13,44 @@ server <- function(input, output) {
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
-        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
+      # plot_sawtooths(selected_points()$min_lat[2], # second entry is for lens
+      #                selected_points()$max_lat[2],
+      #                selected_points()$min_lon[2] %% 360,
+      #                selected_points()$max_lon[2] %% 360
+      #                )+
+        coord_cartesian(xlim=ranges$x,ylim=ranges$y,expand=FALSE)
     })
+    
+    # When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$sawtooth_dblclick, {
+      brush <- input$sawtooth_brush
+      if (!is.null(brush)) {
+        ranges$x <- c(brush$xmin, brush$xmax)
+        ranges$y <- c(brush$ymin, brush$ymax)
+        
+      } else {
+        ranges$x <- NULL
+        ranges$y <- NULL
+      }
+    })
+    
+    output$num_der <- renderPlot({
+      points <- selected_points_compare() %>% filter(dataset == "lens")
+      plot_num_der(
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360
+        # selected_points()$min_lat[2], # second entry is for lens
+        # selected_points()$max_lat[2],
+        # selected_points()$min_lon[2] %% 360,
+        # selected_points()$max_lon[2] %% 360
+      )
+    })
+    
+
 
     #second plot
     output$comp_sawtooth <- renderPlot({
@@ -21,8 +59,37 @@ server <- function(input, output) {
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
-        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
 
+        # selected_points_compare()$min_lat[2], # second entry is for lens
+        # selected_points_compare()$max_lat[2],
+        # selected_points_compare()$min_lon[2] %% 360,
+        # selected_points_compare()$max_lon[2] %% 360
+        # )+
+        coord_cartesian(xlim=ranges_comp$x,ylim=ranges_comp$y,expand=FALSE)
+    })
+    
+    # When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$sawtooth_comp_dblclick, {
+      brush1 <- input$sawtooth_comp_brush
+      if (!is.null(brush1)) {
+        ranges_comp$x <- c(brush1$xmin, brush1$xmax)
+        ranges_comp$y <- c(brush1$ymin, brush1$ymax)
+        
+      } else {
+        ranges_comp$x <- NULL
+        ranges_comp$y <- NULL
+      }
+    })
+    
+    output$comp_num_der <- renderPlot({
+      points <- selected_points_compare() %>% filter(dataset == "lens")
+      plot_num_der(
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
     })
 #######################################################################
     # # smither8
@@ -268,13 +335,14 @@ server <- function(input, output) {
     # JessRoseRobbieJo
     
      VarPlotData <- eventReactive(c(input$go, input$Year), {
+       points <- selected_points() %>% filter(dataset == "era")
        BigDF %>%
          filter(between(lon,
-                        selected_points()$min_lon[1],
-                        selected_points()$max_lon[1]),
+                        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
+                        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon)),
                 between(lat,
-                        selected_points()$min_lat[1],
-                        selected_points()$max_lat[1])) %>%
+                        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
+                        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>%
          filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
          group_by(Year, Month) %>%
          summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
@@ -282,13 +350,15 @@ server <- function(input, output) {
          summarise(varTotPrecip = var(TotMoPrecip))
      })
     
-    TotPlotData <- eventReactive(c(input$go, input$Year), {BigDF %>%
+    TotPlotData <- eventReactive(c(input$go, input$Year), {
+      points <- selected_points() %>% filter(dataset == "era")
+      BigDF %>%
         filter(between(lon,
-                       selected_points()$min_lon[1], 
-                       selected_points()$max_lon[1]),
+                       ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
+                       ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon)),
                between(lat,
-                       selected_points()$min_lat[1],
-                       selected_points()$max_lat[1])) %>%
+                       ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
+                       ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>%
         filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
         group_by(Year) %>%
         summarise(TotYrPrecip=sum(PREC)) %>%
