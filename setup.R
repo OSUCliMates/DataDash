@@ -31,8 +31,8 @@ LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
 
 #setup for reference plot
 us <- map_data("state")
-BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds")  #JRR
-toMap <- distinct(BigDF, lat, lon2)  #JRR
+BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds") %>%
+  rename(lon = lon2)
 
 #setup for range plot
 range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
