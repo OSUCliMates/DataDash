@@ -8,6 +8,9 @@ library(sf)
 library(viridis)
 library(shinycssloaders)
 library(shinythemes)
+#library(ggpubr)
+library(shinyjs)
+
 
 
 #filenames
@@ -15,8 +18,8 @@ LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
 
 #setup for reference plot
 us <- map_data("state")
-BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds")  #JRR
-toMap <- distinct(BigDF, lat, lon2)  #JRR
+BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds") %>%
+  rename(lon = lon2)
 
 #setup for range plot
 range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
@@ -38,6 +41,7 @@ nderiv <- function(x){
   for(i in 2:length(x$cum_prec)){
     y[i]<- x$cum_prec[i]-x$cum_prec[i-1]
   }
+  y[1] <- y[2] #makes it look nicer
   y
 }
 
