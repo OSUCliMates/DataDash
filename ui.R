@@ -194,30 +194,27 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
               #          
               # )
               ###############
-             tabPanel("Decadal Cumulative Precipitation",#stay cool chief
-                      #sliderInput("lat", label = h3("Latitude"), min = 24, 
-                      #                 max = 50, value = c(41,47)),
-                      #sliderInput("lon", label = h3("Longitude"), min = -125, 
-                      #                 max = -66, value = c(-125,-116)),
-                      
-                      conditionalPanel(
-                        condition  = "input.go == 0",
-                        h3("Please select a location in the sidebar and click 'Go' ")
-                      ),
-                      conditionalPanel(
-                        condition = "input.go != 0",
-                      
-                      br(),
-                      plotOutput("sawtooth"),
-                      hr(),
-                      conditionalPanel(
-                        condition = "input.comparison_checkbox == true",
-                        plotOutput("comp_sawtooth")
-                      )
-                      )
-                      #plotOutput("ref_map")
-             ),
-
+              
+              tabPanel("Decadal Cumulative Precipitation",
+                       conditionalPanel(
+                         condition  = "input.go == 0",
+                         h3("Please select a location in the sidebar and click 'Go' ")
+                       ),
+                       conditionalPanel(
+                         condition = "input.go != 0",
+                         
+                         br(),
+                         plotOutput("sawtooth"),
+                         plotOutput("num_der"),
+                         hr(),
+                         conditionalPanel(
+                           condition = "input.comparison_checkbox == true",
+                           plotOutput("comp_sawtooth"),
+                           plotOutput("comp_num_der")
+                         )
+                       )
+              ),
+              
               tabPanel("Yearly - ",
                        conditionalPanel(
                          condition  = "input.go == 0",
