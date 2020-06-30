@@ -98,5 +98,5 @@ nest(grid,data=NULL)%>%
   mutate(data=map2(.x=latitude,.y=longitude,.f=sawtooth_combined))%>%
   unnest()%>%
   mutate(avg_cumulative_prec = map_dbl(avg_cumulative_prec,function(x){x*8640000}))%>%#convert units
-  saveRDS(file="/home/ST505/precalculated_data/yearly_cumulative_prec.rds")
+  saveRDS(file="Data/yearly_cumulative_prec.rds")
 

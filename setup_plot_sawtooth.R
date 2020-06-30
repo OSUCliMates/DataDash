@@ -1,21 +1,21 @@
-#find variable indeces 
-times <- 25550:56939
-gbg<-tidync("/home/ST505/CESM-LENS/historical/PREC.nc")%>%
-  hyper_filter(lat = lat<18)%>%
-  hyper_filter(lon = lon<224)%>%
-  hyper_filter(time= time==25550)%>%
-  hyper_tibble()
-members <- gbg$mem
-gbg<-tidync("/home/ST505/CESM-LENS/historical/PREC.nc")%>%
-  hyper_filter(mem = mem==1)%>%
-  hyper_filter(time= time==25550)%>%
-  hyper_tibble()
-latitudes <- unique(gbg$lat)
-longitudes <- unique(gbg$lon)
-remove(gbg)
+# #find variable indeces 
+# times <- 25550:56939
+# gbg<-tidync("/home/ST505/CESM-LENS/historical/PREC.nc")%>%
+#   hyper_filter(lat = lat<18)%>%
+#   hyper_filter(lon = lon<224)%>%
+#   hyper_filter(time= time==25550)%>%
+#   hyper_tibble()
+# members <- gbg$mem
+# gbg<-tidync("/home/ST505/CESM-LENS/historical/PREC.nc")%>%
+#   hyper_filter(mem = mem==1)%>%
+#   hyper_filter(time= time==25550)%>%
+#   hyper_tibble()
+# latitudes <- unique(gbg$lat)
+# longitudes <- unique(gbg$lon)
+# remove(gbg)
 
 #This function needs the following data frame to run:
-decadal_average_cumulative_prec_waveforms <- readRDS("/home/ST505/precalculated_data/yearly_cumulative_prec.rds")
+decadal_average_cumulative_prec_waveforms <- readRDS("Data/yearly_cumulative_prec.rds")
 
 #use ggplot to make an error message
 err_plot <- ggplot()+
@@ -25,10 +25,10 @@ err_plot <- ggplot()+
            size=5)+
   theme_void()
 
-lat_min <- latitudes[6]
-lat_max <- latitudes[8]
-lon_min <- longitudes[24]
-lon_max <- longitudes[26]
+# lat_min <- latitudes[6]
+# lat_max <- latitudes[8]
+# lon_min <- longitudes[24]
+# lon_max <- longitudes[26]
 
 plot_sawtooths <- function(lat_min,lat_max,lon_min,lon_max){
   #first we check to see that there were raster points selected
