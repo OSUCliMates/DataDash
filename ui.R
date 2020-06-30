@@ -273,7 +273,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
         #              #plotOutput("ref_map")
         #     ),
 
-              tabPanel("Total, Accumulation, Variation Time Series",
+              tabPanel("Yearly Total, Cumulative, and By-Month Variability",
                        conditionalPanel(
                          condition  = "input.go == 0",
                          h3("Please select a location in the sidebar and click 'Go' ")
@@ -300,29 +300,15 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        div(style="font-size:20px;",
                            sliderInput(inputId = "Year", label="Years of interest",
                                        min=1979, max=2017, value=c(1979, 1985), sep="")),
-                       actionButton(inputId = "Ygo",
-                                    label = "Set year",
-                                    class="btn-primary btn-block"),
-                  #     sidebarLayout(
-                  #       sidebarPanel(
-                  #         # Slider for range of years
-                  #         div(style="font-size:20px;",
-                  #             sliderInput(inputId = "Year", label="Years of interest",
-                  #                         min=1979, max=2017, value=c(1979, 1985), sep=""))
-                  #       ),
-                  #       mainPanel(
-                  #         tags$h3("ERA Interim Station Locations"),
-                  #         plotOutput(outputId = "mPlot", brush="selection1", width="80%")
-                  #       )),
 
                        tags$h3("Total yearly precipitation"),
-                       plotOutput(outputId = "TotPlot"),
+                       withSpinner(plotOutput(outputId = "TotPlot")),
                        
                        tags$h3("Cumulative yearly precipitation"),
-                       plotOutput(outputId = "CumuPlot"),
+                       withSpinner(plotOutput(outputId = "CumuPlot")),
                        
                        tags$h3("Variability of total monthly precipitation by year"),
-                       plotOutput(outputId = "VarPlot")
+                       withSpinner(plotOutput(outputId = "VarPlot"))
                        #Jess put the stuff you're working on in here
                        )
               ),
