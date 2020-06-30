@@ -242,26 +242,59 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        )
               ),
               
-              tabPanel("Yearly - ",
+              #tabPanel("Yearly - ",
+
+              #     tabPanel("Decadal Cumulative Precipitation",#stay cool chief
+                      #sliderInput("lat", label = h3("Latitude"), min = 24, 
+                      #                 max = 50, value = c(41,47)),
+                      #sliderInput("lon", label = h3("Longitude"), min = -125, 
+                      #                 max = -66, value = c(-125,-116)),
+                      
+        #              conditionalPanel(
+        #                condition  = "input.go == 0",
+        #                h3("Please select a location in the sidebar and click 'Go' ")
+        #              ),
+        #              conditionalPanel(
+        #                condition = "input.go != 0",
+                      
+        #              br(),
+        #              plotOutput("sawtooth"),
+        #              hr(),
+        #              conditionalPanel(
+        #                condition = "input.comparison_checkbox == true",
+        #                plotOutput("comp_sawtooth")
+        #              )
+        #              )
+        #              #plotOutput("ref_map")
+        #     ),
+
+              tabPanel("Total, Accumulation, Variation Time Series",
                        conditionalPanel(
                          condition  = "input.go == 0",
                          h3("Please select a location in the sidebar and click 'Go' ")
                        ),
                        conditionalPanel(
                          condition = "input.go != 0",
-                       titlePanel("Precipitation in Oregon - Quadrant/Year Comparison Tool"),
+                       titlePanel("Precipitation Time Series: Total, Accumulation, and Variation"),
                        
-                       sidebarLayout(
-                         sidebarPanel(
-                           # Slider for range of years
-                           div(style="font-size:20px;",
-                               sliderInput(inputId = "Year", label="Years of interest",
-                                           min=1979, max=2017, value=c(1979, 1985), sep=""))
-                         ),
-                         mainPanel(
-                           tags$h3("ERA Interim Station Locations"),
-                           plotOutput(outputId = "mPlot", brush="selection1", width="80%")
-                         )),
+                       # Slider for range of years
+                       div(style="font-size:20px;",
+                           sliderInput(inputId = "Year", label="Years of interest",
+                                       min=1979, max=2017, value=c(1979, 1985), sep="")),
+                       actionButton(inputId = "Ygo",
+                                    label = "Set year",
+                                    class="btn-primary btn-block"),
+                  #     sidebarLayout(
+                  #       sidebarPanel(
+                  #         # Slider for range of years
+                  #         div(style="font-size:20px;",
+                  #             sliderInput(inputId = "Year", label="Years of interest",
+                  #                         min=1979, max=2017, value=c(1979, 1985), sep=""))
+                  #       ),
+                  #       mainPanel(
+                  #         tags$h3("ERA Interim Station Locations"),
+                  #         plotOutput(outputId = "mPlot", brush="selection1", width="80%")
+                  #       )),
                        
                        tags$h3("Total yearly precipitation"),
                        plotOutput(outputId = "TotPlot"),
@@ -271,7 +304,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        
                        tags$h3("Variability of total monthly precipitation by year"),
                        plotOutput(outputId = "VarPlot")
-                       #Jess put  the stuff you're working on in here
+                       #Jess put the stuff you're working on in here
                        )
               ),
               

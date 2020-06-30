@@ -310,23 +310,35 @@ server <- function(input, output) {
     
     
     # JessRoseRobbieJo
-    VarPlotData <- reactive({
-      brushedPoints(BigDF, input$selection1) %>%
-        filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
-        group_by(Year, Month) %>%
-        summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
-        group_by(Year) %>%
-        summarise(varTotPrecip = var(TotMoPrecip))})
-    TotPlotsData <- reactive({
-      brushedPoints(BigDF, input$selection1) %>%
+    
+     VarPlotData <- eventReactive(c(input$go, input$Year), {
+       BigDF %>%
+         filter(between(lon,
+                        selected_points()$min_lon[1],
+                        selected_points()$max_lon[1]),
+                between(lat,
+                        selected_points()$min_lat[1],
+                        selected_points()$max_lat[1])) %>%
+         filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
+         group_by(Year, Month) %>%
+         summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
+         group_by(Year) %>%
+         summarise(varTotPrecip = var(TotMoPrecip))
+     })
+    
+    TotPlotData <- eventReactive(c(input$go, input$Year), {BigDF %>%
+        filter(between(lon,
+                       selected_points()$min_lon[1], 
+                       selected_points()$max_lon[1]),
+               between(lat,
+                       selected_points()$min_lat[1],
+                       selected_points()$max_lat[1])) %>%
         filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
         group_by(Year) %>%
         summarise(TotYrPrecip=sum(PREC)) %>%
-        mutate(CumuPrecip = cumsum(TotYrPrecip))}) %>%
-      debounce(2000)
+        mutate(CumuPrecip = cumsum(TotYrPrecip))})
 
-   xAxisTicks <- reactive({
-
+   xAxisTicks <- eventReactive(c(input$go, input$Year), {
      # If number of years plotted is odd, the last label will occur before the last plotted point, so
      # add two to the final year displayed
      if ((input$Year[2] - input$Year[1]) %% 2 > 0) {
@@ -348,19 +360,20 @@ server <- function(input, output) {
       }
     })
 
-    output$mPlot <- renderPlot({
-      ggplot(toMap)+
-        geom_point(aes(x=lon2, y=lat), color="red", alpha=0.25)+
-        borders("state", size=1)+
-        xlab("Longitude")+
-        ylab("Latitude")+
-        theme(text = element_text(size=20))+
-        theme_dd()
-    })
-
-    output$VarPlot <- renderPlot({
-      VarPlotData()
+   output$TotPlot <- renderPlot({
       xAxisTicks()
+      TotPlotData()
+      ggplot(TotPlotData())+
+         geom_line(aes(x=Year, y=TotYrPrecip), group=1, size=0.8)+
+         labs(y="Total yearly precipitation (m)")+
+         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+         theme(text = element_text(size=20))+
+         theme_dd()
+   })
+   
+    output$VarPlot <- renderPlot({
+      xAxisTicks()
+      VarPlotData()
       ggplot(VarPlotData())+
         geom_line(aes(x=Year, y=varTotPrecip))+
         labs(y="Variance in Total Monthly Precipitation (m)")+
@@ -369,24 +382,16 @@ server <- function(input, output) {
         theme_dd()
     })
 
-    output$TotPlot <- renderPlot({
-      TotPlotsData()
-      ggplot(TotPlotsData())+
-        geom_line(aes(x=Year, y=TotYrPrecip), group=1, size=0.8)+
-        labs(y="Total yearly precipitation (m)")+
-        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-        theme(text = element_text(size=20))+
-        theme_dd()
-    })
-
     output$CumuPlot <- renderPlot({
-      ggplot(TotPlotsData())+
+      TotPlotData()
+      xAxisTicks()
+      ggplot(TotPlotData())+
         geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
         labs(y="Cumulative precipitation (m)")+
         scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
         theme(text = element_text(size=20))+
         theme_dd()
-    })
+      })
     
-}
+    }
 
