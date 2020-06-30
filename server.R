@@ -8,13 +8,21 @@ server <- function(input, output) {
   ranges_comp <- reactiveValues(x=NULL, y=NULL)
     #first plot
     output$sawtooth <- renderPlot({
-      plot_sawtooths(selected_points()$min_lat[2], # second entry is for lens
-                     selected_points()$max_lat[2],
-                     selected_points()$min_lon[2] %% 360,
-                     selected_points()$max_lon[2] %% 360
-                     )+
+
+      points <- selected_points() %>% filter(dataset == "lens")
+      plot_sawtooths(
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
+      # plot_sawtooths(selected_points()$min_lat[2], # second entry is for lens
+      #                selected_points()$max_lat[2],
+      #                selected_points()$min_lon[2] %% 360,
+      #                selected_points()$max_lon[2] %% 360
+      #                )+
         coord_cartesian(xlim=ranges$x,ylim=ranges$y,expand=FALSE)+
         ggtitle(str_c("First selection: ",input$state))
+
     })
     
     # When a double-click happens, check if there's a brush on the plot.
@@ -32,27 +40,42 @@ server <- function(input, output) {
     })
     
     output$num_der <- renderPlot({
+      points <- selected_points_compare() %>% filter(dataset == "lens")
       plot_num_der(
-        selected_points()$min_lat[2], # second entry is for lens
-        selected_points()$max_lat[2],
-        selected_points()$min_lon[2] %% 360,
-        selected_points()$max_lon[2] %% 360
+
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360
+        # selected_points()$min_lat[2], # second entry is for lens
+        # selected_points()$max_lat[2],
+        # selected_points()$min_lon[2] %% 360,
+        # selected_points()$max_lon[2] %% 360
       )+
         ggtitle(str_c("First selection: ",input$state))
+
     })
     
 
 
     #second plot
     output$comp_sawtooth <- renderPlot({
+      points <- selected_points_compare() %>% filter(dataset == "lens")
       plot_sawtooths(
-        selected_points_compare()$min_lat[2], # second entry is for lens
-        selected_points_compare()$max_lat[2],
-        selected_points_compare()$min_lon[2] %% 360,
-        selected_points_compare()$max_lon[2] %% 360
-        )+
-        coord_cartesian(xlim=ranges_comp$x,ylim=ranges_comp$y,expand=FALSE)+
+
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
+
+        # selected_points_compare()$min_lat[2], # second entry is for lens
+        # selected_points_compare()$max_lat[2],
+        # selected_points_compare()$min_lon[2] %% 360,
+        # selected_points_compare()$max_lon[2] %% 360
+        # )+
+         coord_cartesian(xlim=ranges_comp$x,ylim=ranges_comp$y,expand=FALSE)+
         ggtitle(str_c("Second selection: ",input$comparison_state))
+
     })
     
     # When a double-click happens, check if there's a brush on the plot.
@@ -70,45 +93,52 @@ server <- function(input, output) {
     })
     
     output$comp_num_der <- renderPlot({
+      points <- selected_points_compare() %>% filter(dataset == "lens")
       plot_num_der(
-        selected_points_compare()$min_lat[2], # second entry is for lens
-        selected_points_compare()$max_lat[2],
-        selected_points_compare()$min_lon[2] %% 360,
-        selected_points_compare()$max_lon[2] %% 360
-      )+
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
         ggtitle(str_c("Second selection: ",input$comparison_state))
+
     })
 #######################################################################
     # # smither8
     output$ranges_smooth <- renderPlot({ 
-      plot_ranges_smooth(selected_points()$min_lat[2], 
-                     selected_points()$max_lat[2],
-                     selected_points()$min_lon[2] %% 360,
-                     selected_points()$max_lon[2] %% 360)
+      points <- selected_points() %>% filter(dataset == "lens")
+      plot_ranges_smooth(
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
     })
     
     output$comp_ranges_smooth <- renderPlot({ 
+      points <- selected_points_compare() %>% filter(dataset == "lens")
       plot_ranges_smooth(
-        selected_points_compare()$min_lat[2],
-        selected_points_compare()$max_lat[2],
-        selected_points_compare()$min_lon[2] %% 360,
-        selected_points_compare()$max_lon[2] %% 360)
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
     }
     )
     
     output$ranges_box <- renderPlot({ 
-      plot_ranges_box(selected_points()$min_lat[2], 
-                  selected_points()$max_lat[2],
-                  selected_points()$min_lon[2] %% 360,
-                  selected_points()$max_lon[2] %% 360)
+      points <- selected_points() %>% filter(dataset == "lens")
+      plot_ranges_box(
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
     })
     
     output$comp_ranges_box <- renderPlot({ 
+      points <- selected_points_compare() %>% filter(dataset == "lens")
       plot_ranges_box(
-        selected_points_compare()$min_lat[2],
-        selected_points_compare()$max_lat[2],
-        selected_points_compare()$min_lon[2] %% 360,
-        selected_points_compare()$max_lon[2] %% 360)
+        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
+        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
+        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
     }
     )
     
@@ -316,13 +346,14 @@ server <- function(input, output) {
     # JessRoseRobbieJo
     
      VarPlotData <- eventReactive(c(input$go, input$Year), {
+       points <- selected_points() %>% filter(dataset == "era")
        BigDF %>%
          filter(between(lon,
-                        selected_points()$min_lon[1],
-                        selected_points()$max_lon[1]),
+                        ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
+                        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon)),
                 between(lat,
-                        selected_points()$min_lat[1],
-                        selected_points()$max_lat[1])) %>%
+                        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
+                        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>%
          filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
          group_by(Year, Month) %>%
          summarise(TotMoPrecip=sum(PREC)) %>%      # Total precip for month, by station
@@ -330,13 +361,15 @@ server <- function(input, output) {
          summarise(varTotPrecip = var(TotMoPrecip))
      })
     
-    TotPlotData <- eventReactive(c(input$go, input$Year), {BigDF %>%
+    TotPlotData <- eventReactive(c(input$go, input$Year), {
+      points <- selected_points() %>% filter(dataset == "era")
+      BigDF %>%
         filter(between(lon,
-                       selected_points()$min_lon[1], 
-                       selected_points()$max_lon[1]),
+                       ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
+                       ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon)),
                between(lat,
-                       selected_points()$min_lat[1],
-                       selected_points()$max_lat[1])) %>%
+                       ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
+                       ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>%
         filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
         group_by(Year) %>%
         summarise(TotYrPrecip=sum(PREC)) %>%

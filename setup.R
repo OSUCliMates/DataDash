@@ -8,7 +8,7 @@ library(sf)
 library(viridis)
 library(shinycssloaders)
 library(shinythemes)
-library(ggpubr)
+#library(ggpubr)
 library(shinyjs)
 
 

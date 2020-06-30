@@ -282,6 +282,20 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          condition = "input.go != 0",
                        titlePanel("Precipitation Time Series: Total, Accumulation, and Variation"),
                        
+
+
+                       # sidebarLayout(
+                       #   sidebarPanel(
+                       #     # Slider for range of years
+                       #     div(style="font-size:20px;",
+                       #         sliderInput(inputId = "Year", label="Years of interest",
+                       #                     min=1979, max=2017, value=c(1979, 1985), sep=""))
+                       #   ),
+                       #   mainPanel(
+                       #     tags$h3("ERA Interim Station Locations"), 
+                       #     plotOutput(outputId = "mPlot", brush="selection1", width="80%")
+                       #   )),
+
                        # Slider for range of years
                        div(style="font-size:20px;",
                            sliderInput(inputId = "Year", label="Years of interest",
@@ -300,7 +314,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                   #         tags$h3("ERA Interim Station Locations"),
                   #         plotOutput(outputId = "mPlot", brush="selection1", width="80%")
                   #       )),
-                       
+
                        tags$h3("Total yearly precipitation"),
                        plotOutput(outputId = "TotPlot"),
                        
