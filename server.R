@@ -175,7 +175,7 @@ server <- function(input, output) {
     })
     
     is_comparison_empty <- eventReactive(c(input$comparison_checkbox,input$go),{
-      if(!input$comparison_checkbox){return(FALSE)}
+      if(!input$comparison_checkbox){return(TRUE)}
       nrows <- selected_points_compare() %>%
         select(min_lat) %>% 
         summarize(n = n()) %>%
@@ -230,6 +230,9 @@ server <- function(input, output) {
         }
       # Plot with selections
       #monthly_precip_deviation(precip_deviation_data())
+      if(!is_comparison_empty()){
+        return(seasonal_precip_deviation(precip_deviation_data(),compare = TRUE))
+      }
       seasonal_precip_deviation(precip_deviation_data())
     })
 

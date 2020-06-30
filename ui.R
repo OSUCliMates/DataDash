@@ -232,7 +232,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                                            min=1979, max=2017, value=c(1979, 1985), sep=""))
                          ),
                          mainPanel(
-                           tags$h3("ERA Interim Station Locations"),
+                           tags$h3("ERA Interim Station Locations"), 
                            plotOutput(outputId = "mPlot", brush="selection1", width="80%")
                          )),
                        
