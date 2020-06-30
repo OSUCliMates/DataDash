@@ -31,6 +31,13 @@ map_bounds <- function(state,current_zoom){
 # the location_points should already be read in I believe
 #location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
 plot_brushed_map <- function(state, current_zoom, bounding_box){
+    if(state == "Hawaii" | state == "Alaska"){
+        return(ggplot()+
+            annotate(geom="text",y=1,x=1,
+                     label="Oops! This state is not included in our dataset. Please select another.")+
+            theme_void()
+        )
+    }
     mapdata <- map_data("state")
     pointsize <- 2
     if(current_zoom < 0 & state != "United States"){
@@ -42,16 +49,157 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
     }
     ggplot() + 
         geom_polygon(data = mapdata,
-                     aes(x=long,y=lat,group=group), fill = NA, color = "black")+
+                     aes(x=long,y=lat,group=group), fill = "light grey", color = "black")+
         geom_point(data = location_points, 
-                   aes(x = lon, y = lat,color = dataset),
+                   aes(x = lon, y = lat,shape = dataset),
                    size = pointsize) +
         coord_quickmap(xlim = bounding_box$lon_range,
                        ylim = bounding_box$lat_range) +
-        labs(color = "Dataset",
+        scale_shape_discrete(labels=c("ERA", "CESM-LENS"))+
+        labs(shape = "Data set",
              title = "Station/Observation Locations") +
-        theme(#axis.text = element_blank(),
+        theme_dd() +
+        theme(axis.text = element_blank(),
               axis.title = element_blank(),
-              axis.ticks = element_blank()
+              axis.ticks = element_blank(),
+              panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              legend.position = "bottom",
+              legend.title = element_blank(),
+              panel.grid = element_blank()
         )
+}
+
+
+
+get_precip_deviation_data <- function(selected_points, data_choice){
+    precip_deviation %>% 
+        filter(between(lon,
+                       selected_points$min_lon[1], # first entry is era, second is lens
+                       selected_points$max_lon[1]),
+               between(lat,
+                       selected_points$min_lat[1],
+                       selected_points$max_lat[1])) %>% 
+        #group_by(month_date) %>% 
+        #mutate(percent_deviation = diff_from_prec_mean/overall_prec_mean) %>%
+        group_by(quarter_date,season) %>%
+        
+        summarize(avg_perc_dev = mean(percent_deviation)) %>%
+        #summarize(mean_deviation = mean(diff_from_prec_mean)) %>%
+        #summarize(mean_deviation = mean(diff_from_prec_mean),
+        #          percent_deviation = mean(diff_from_prec_mean)/mean(overall_prec_mean)) %>% 
+    
+        #mutate(month = lubridate::month(month_date,label = T),
+         #      data_choice = data_choice)
+        mutate(data_choice = data_choice)
+}
+
+
+#era_precip_quarter_deviation %>% 
+  
+
+get_us_precip_deviation <- function(){
+    precip_deviation %>% 
+     # mutate(percent_deviation = diff_from_prec_mean/overall_prec_mean) %>%
+     #era_precip_quarter_deviation %>%   
+        #group_by(quarter_date) %>%
+        group_by(quarter_date,season) %>%
+        summarize(avg_perc_dev = mean(percent_deviation)) %>%
+        #group_by(month_date) %>% 
+        #summarize(mean_deviation = mean(diff_from_prec_mean)) %>%
+        #summarize(mean_deviation = mean(diff_from_prec_mean),
+        #          percent_deviation = mean(diff_from_prec_mean)/mean(overall_prec_mean)) %>% 
+        #mutate(month = lubridate::month(month_date,label = T),
+        #       data_choice = "United States")
+        mutate(data_choice = "United States Average")
+        
+}
+
+
+seasonal_precip_deviation <- function(data){
+    data %>%
+        #precip_deviation_test %>% mutate(month = lubridate::month(month_date),data_choice = "one") %>%# dataset for testing 
+        ggplot() +
+        geom_hline(yintercept = 0,linetype = "dashed") +
+        geom_line(aes(x = as.Date(quarter_date), y = avg_perc_dev,#y = mean_deviation,
+                      group = data_choice,
+                      color = data_choice))+
+        #geom_ribbon(aes(x = as.Date(quarter_date),ymin = mean_deviation, ymax = 0,
+        #              group = data_choice,
+        #              fill = data_choice),alpha = .6)+
+        scale_x_date() +
+        scale_y_continuous(labels = scales::percent,n.breaks = 3) +
+        scale_fill_viridis(discrete = TRUE) +
+        facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")))+
+        theme_dd() +
+        theme(panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              legend.title = element_blank()) +
+        labs(x = "Year",y = expression(paste("Percent deviation from seasonal precip average (", drier %<->% wetter ,")")))
+}
+
+
+monthly_precip_deviation <- function(data){
+    data %>%
+        #precip_deviation_test %>% mutate(month = lubridate::month(month_date),data_choice = "one") %>%# dataset for testing 
+        ggplot() +
+        geom_hline(yintercept = 0,linetype = "dashed") +
+        geom_line(aes(x = as.Date(month_date), y = mean_deviation,
+        #geom_ribbon(aes(x = as.Date(quarter_date),ymin = mean_deviation, ymax = 0,
+                        group = data_choice,
+                                      color = data_choice)) +
+                        #fill = data_choice))+
+        scale_x_date() +
+        scale_y_continuous(labels = scales::percent()) +#,n.breaks = 3) +
+        facet_wrap(~month) + 
+        theme_dd() +
+        theme(panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              legend.title = element_blank()) +
+        labs(x = "Year", y = expression(drier %<->% wetter))
+}
+
+
+seasonal_strips <- function(data){
+    data %>%
+        ggplot() +
+        geom_tile(aes(x = as.Date(quarter_date), y = 1,fill= avg_perc_dev)) +#fill = mean_deviation)) +
+        facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
+        scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
+        scale_x_date() + 
+        labs(x = "",y = "") +
+        guides(fill = guide_colorbar(title = expression(wetter %<->% drier),
+                                     title.position = "right",
+                                     title.theme = element_text(angle = 270))) +
+        theme_dd() +
+        theme(axis.text.y = element_blank(),
+              axis.ticks.y = element_blank(),
+              legend.text = element_blank(),
+              panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              panel.spacing = unit(-.5, "lines"),
+              panel.grid.major.x = element_blank(),
+              panel.grid.major.y = element_blank()) 
+}
+
+
+monthly_strips <- function(data){
+    data %>% 
+        ggplot() +
+        geom_tile(aes(x = as.Date(month_date), y = 1,fill = mean_deviation)) +
+        scale_fill_gradient2(low = "#3d2007",mid = "white",high = "#187327") +
+        facet_wrap(~data_choice,ncol = 1,strip.position = "left") +
+        scale_x_date() + 
+        labs(x = "",y = "") +
+        guides(fill = guide_colorbar(title = expression(wetter %<->% drier),
+                                     title.position = "right",
+                                     title.theme = element_text(angle = 270))) +
+        theme_dd() +
+        theme(axis.text.y = element_blank(),
+              axis.ticks.y = element_blank(),
+              legend.text = element_blank(),
+              panel.background = element_rect(fill = "transparent",colour = NA),
+              plot.background = element_rect(fill = "transparent",colour = NA),
+              panel.spacing = unit(-.5, "lines"),
+              panel.grid = element_blank()) 
 }
