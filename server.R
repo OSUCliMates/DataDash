@@ -355,18 +355,18 @@ server <- function(input, output) {
                        ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat),
                        ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat))) %>%
         filter(between(Year, as.numeric(input$Year[1]), as.numeric(input$Year[2]))) %>%
-        group_by(locat, Year) %>%
-        summarise(TotPrecipByLocat=sum(PREC)) %>%
-        mutate(CumuPrecipByLocat=cumsum(TotPrecipByLocat)) %>%
+        group_by(locat, Year, Month) %>%
+        summarise(TotMoPrecipByLocat=sum(PREC)) %>%      # Total precip for month, by station
+        group_by(Year, Month) %>%
+        summarise(AveTotMoPrecip = mean(TotMoPrecipByLocat)) %>%
         group_by(Year) %>%
-        summarise(AveTotYrPrecip = mean(TotPrecipByLocat),
-                  AveCumuPrecip = mean(CumuPrecipByLocat)) %>%
+        summarise(varTotPrecip = var(AveTotMoPrecip)) %>%
         mutate(Selection = paste("Selection 1 - ", input$state))
     })
     
     Select2 <- eventReactive(c(input$go, input$Year), {
       if(input$comparison_checkbox){
-        points <- selected_points() %>% filter(dataset == "era")
+        points <- selected_points_compare() %>% filter(dataset == "era")
         BigDF %>%
           filter(between(lon,
                          ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
@@ -415,7 +415,7 @@ server <- function(input, output) {
      
       Select2T <- eventReactive(c(input$go, input$Year), {
        if(input$comparison_checkbox){
-         points <- selected_points_compare() %<% filter(dataset == "era")
+         points <- selected_points_compare() %>% filter(dataset == "era")
          BigDF %>%
            filter(between(lon,
                           ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon),
