@@ -35,6 +35,7 @@ nderiv <- function(x){
   for(i in 2:length(x$cum_prec)){
     y[i]<- x$cum_prec[i]-x$cum_prec[i-1]
   }
+  y[1] <- y[2] #makes it look nicer
   y
 }
 
