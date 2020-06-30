@@ -57,7 +57,7 @@ plot_brushed_map <- function(state, current_zoom, bounding_box){
                        ylim = bounding_box$lat_range) +
         scale_shape_discrete(labels=c("ERA", "CESM-LENS"))+
         labs(shape = "Data set",
-             title = "Station/Observation Locations") +
+             title = "Observation Locations") +
         theme_dd() +
         theme(axis.text = element_blank(),
               axis.title = element_blank(),
