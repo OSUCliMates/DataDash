@@ -37,7 +37,7 @@ server <- function(input, output) {
     })
     
     output$num_der <- renderPlot({
-      points <- selected_points_compare() %>% filter(dataset == "lens")
+      points <- selected_points() %>% filter(dataset == "lens")
       plot_num_der(
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
@@ -281,7 +281,7 @@ server <- function(input, output) {
       # If selection clears show US value
       if(is_empty()){
         #return(monthly_precip_deviation(us_deviation) + ggtitle("Select points and click go"))
-        return(seasonal_precip_deviation(us_deviation))
+        return(seasonal_precip_deviation(us_deviation,empty = TRUE))
         }
       # Plot with selections
       #monthly_precip_deviation(precip_deviation_data())

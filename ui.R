@@ -344,7 +344,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        h3("Precipitation Strips"),
                        # Plot 2: 
                       p("Each strip shows the percent deviation from average seasonal values
-                      (wetter = green,  dryer = brown) . We often see drier periods lasting longer than a season -
+                      (wetter = green,  drier = brown) . We often see drier periods lasting longer than a season -
                       and these can often be seen in different locations. Often we see periods of
                          drought that are evident in the entire US as well."),
                        withSpinner(plotOutput(outputId = "precip_strips"))),
