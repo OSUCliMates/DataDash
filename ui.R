@@ -221,7 +221,7 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                                     )
                          ),
                          h3("Decadal average precipitation"),
-                         p("To save computation time, this plot is just the numeric derivative of the abovce plot.
+                         p("This plot is just the numeric derivative of the above plot.
                            It shows what times of year have the most and least precipitation. These time series
                            tend to be a bit noisy, but when looked at together, precipitation patterns emerge.
                            When is your area's \"rainy season\"?"),
