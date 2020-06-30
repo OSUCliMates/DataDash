@@ -40,7 +40,7 @@ server <- function(input, output) {
     })
     
     output$num_der <- renderPlot({
-      points <- selected_points_compare() %>% filter(dataset == "lens")
+      points <- selected_points() %>% filter(dataset == "lens")
       plot_num_der(
 
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
