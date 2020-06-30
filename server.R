@@ -256,7 +256,7 @@ server <- function(input, output) {
     
     # JessRoseRobbieJo
     
-     VarPlotData <- eventReactive(input$go, {
+     VarPlotData <- eventReactive(c(input$go, input$Year), {
        BigDF %>%
          filter(between(lon,
                         selected_points()$min_lon[1],
@@ -271,7 +271,7 @@ server <- function(input, output) {
          summarise(varTotPrecip = var(TotMoPrecip))
      })
     
-    TotPlotData <- eventReactive(input$go, {BigDF %>%
+    TotPlotData <- eventReactive(c(input$go, input$Year), {BigDF %>%
         filter(between(lon,
                        selected_points()$min_lon[1], 
                        selected_points()$max_lon[1]),
@@ -283,7 +283,7 @@ server <- function(input, output) {
         summarise(TotYrPrecip=sum(PREC)) %>%
         mutate(CumuPrecip = cumsum(TotYrPrecip))})
 
-   xAxisTicks <- eventReactive(input$Ygo, {
+   xAxisTicks <- eventReactive(c(input$go, input$Year), {
      # If number of years plotted is odd, the last label will occur before the last plotted point, so
      # add two to the final year displayed
      if ((input$Year[2] - input$Year[1]) %% 2 > 0) {
@@ -306,57 +306,36 @@ server <- function(input, output) {
     })
 
    output$TotPlot <- renderPlot({
-     if(input$Ygo == 0){
-       ggplot()+
-         annotate(geom="text",y=1,x=1,label="Please choose a range of years to explore.")+
-         theme_void()
-     }
-     else{
-       #xAxisTicks()
-       TotPlotData()
-       ggplot(TotPlotData())+
+      xAxisTicks()
+      TotPlotData()
+      ggplot(TotPlotData())+
          geom_line(aes(x=Year, y=TotYrPrecip), group=1, size=0.8)+
          labs(y="Total yearly precipitation (m)")+
          scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
          theme(text = element_text(size=20))+
          theme_dd()
-     }
    })
    
     output$VarPlot <- renderPlot({
-      if(input$Ygo == 0){
-        ggplot()+
-          annotate(geom="text",y=1,x=1,label="Please choose a range of years to explore.")+
-          theme_void()
-      }
-      else{
-        #xAxisTicks()
-        VarPlotData()
-        ggplot(VarPlotData())+
-          geom_line(aes(x=Year, y=varTotPrecip))+
-          labs(y="Variance in Total Monthly Precipitation (m)")+
-          scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-          theme(text = element_text(size=19))+
-          theme_dd()
-      }
+      xAxisTicks()
+      VarPlotData()
+      ggplot(VarPlotData())+
+        geom_line(aes(x=Year, y=varTotPrecip))+
+        labs(y="Variance in Total Monthly Precipitation (m)")+
+        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+        theme(text = element_text(size=19))+
+        theme_dd()
     })
 
     output$CumuPlot <- renderPlot({
-      if(input$Ygo == 0){
-        ggplot()+
-          annotate(geom="text",y=1,x=1,label="Please choose a range of years to explore.")+
-          theme_void()
-      }
-      else{
-        TotPlotData()
-        #xAxisTicks()
-        ggplot(TotPlotData())+
-          geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
-          labs(y="Cumulative precipitation (m)")+
-          scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
-          theme(text = element_text(size=20))+
-          theme_dd()
-        }
+      TotPlotData()
+      xAxisTicks()
+      ggplot(TotPlotData())+
+        geom_line(aes(x=Year, y=CumuPrecip), size=0.8)+
+        labs(y="Cumulative precipitation (m)")+
+        scale_x_continuous(breaks=xAxisTicks(), labels=xAxisTicks())+
+        theme(text = element_text(size=20))+
+        theme_dd()
       })
     
     }
