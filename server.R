@@ -4,13 +4,30 @@ server <- function(input, output) {
 ########################################################  
   # K8
     
+  ranges <- reactiveValues(x=NULL, y=NULL)
+  ranges_comp <- reactiveValues(x=NULL, y=NULL)
     #first plot
     output$sawtooth <- renderPlot({
       plot_sawtooths(selected_points()$min_lat[2], # second entry is for lens
                      selected_points()$max_lat[2],
                      selected_points()$min_lon[2] %% 360,
                      selected_points()$max_lon[2] %% 360
-                     )
+                     )+
+        coord_cartesian(xlim=ranges$x,ylim=ranges$y,expand=FALSE)
+    })
+    
+    # When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$sawtooth_dblclick, {
+      brush <- input$sawtooth_brush
+      if (!is.null(brush)) {
+        ranges$x <- c(brush$xmin, brush$xmax)
+        ranges$y <- c(brush$ymin, brush$ymax)
+        
+      } else {
+        ranges$x <- NULL
+        ranges$y <- NULL
+      }
     })
     
     output$num_der <- renderPlot({
@@ -31,7 +48,22 @@ server <- function(input, output) {
         selected_points_compare()$max_lat[2],
         selected_points_compare()$min_lon[2] %% 360,
         selected_points_compare()$max_lon[2] %% 360
-        )
+        )+
+        coord_cartesian(xlim=ranges_comp$x,ylim=ranges_comp$y,expand=FALSE)
+    })
+    
+    # When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$sawtooth_comp_dblclick, {
+      brush1 <- input$sawtooth_comp_brush
+      if (!is.null(brush1)) {
+        ranges_comp$x <- c(brush1$xmin, brush1$xmax)
+        ranges_comp$y <- c(brush1$ymin, brush1$ymax)
+        
+      } else {
+        ranges_comp$x <- NULL
+        ranges_comp$y <- NULL
+      }
     })
     
     output$comp_num_der <- renderPlot({

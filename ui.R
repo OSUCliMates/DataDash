@@ -204,21 +204,39 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          condition = "input.go != 0",
                          
                          h3("Annual cumulative precipitation by decade"),
-                         p("Cumulative rainfall for each given calendar day, averaged across the selected pixels, 
+                         p("Cumulative precipitation for each given calendar day, averaged across the selected pixels,  
                            and across all years in each given decade."),
-                         plotOutput("sawtooth"),
-                         h3("Decadal average rainfall"),
+                         p("To zoom in, click and drag to select an area, then double click the selected area. 
+                           To reset zoom, double click anywhere."),
+                         plotOutput("sawtooth",
+                                    dblclick = "sawtooth_dblclick",
+                                    brush = brushOpts(
+                                      id = "sawtooth_brush",
+                                      resetOnNew = TRUE
+                                    )
+                         ),
+                         h3("Decadal average precipitation"),
                          p("To save computation time, this plot is just the numeric derivative of the abovce plot.
                            It shows what times of year have the most and least precipitation. These time series
                            tend to be a bit noisy, but when looked at together, precipitation patterns emerge.
                            When is your area's \"rainy season\"?"),
+                         p("(Plot does not zoom)"),
                          plotOutput("num_der"),
                          hr(),
                          conditionalPanel(
                            condition = "input.comparison_checkbox == true",
                            h3("Annual cumulative precipitation by decade"),
-                           plotOutput("comp_sawtooth"),
+                           p("To zoom in, click and drag to select an area, then double click the selected area. 
+                           To reset zoom, double click anywhere."),
+                           plotOutput("comp_sawtooth",
+                                      dblclick = "sawtooth_comp_dblclick",
+                                      brush = brushOpts(
+                                        id = "sawtooth_comp_brush",
+                                        resetOnNew = TRUE
+                                      )
+                           ),
                            h3("Decadal average rainfall"),
+                           p("(Plot does not zoom)"),
                            plotOutput("comp_num_der")
                          )
                        )
