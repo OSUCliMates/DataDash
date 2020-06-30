@@ -8,6 +8,7 @@ server <- function(input, output) {
   ranges_comp <- reactiveValues(x=NULL, y=NULL)
     #first plot
     output$sawtooth <- renderPlot({
+
       points <- selected_points() %>% filter(dataset == "lens")
       plot_sawtooths(
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
@@ -19,7 +20,9 @@ server <- function(input, output) {
       #                selected_points()$min_lon[2] %% 360,
       #                selected_points()$max_lon[2] %% 360
       #                )+
-        coord_cartesian(xlim=ranges$x,ylim=ranges$y,expand=FALSE)
+        coord_cartesian(xlim=ranges$x,ylim=ranges$y,expand=FALSE)+
+        ggtitle(str_c("First selection: ",input$state))
+
     })
     
     # When a double-click happens, check if there's a brush on the plot.
@@ -39,6 +42,7 @@ server <- function(input, output) {
     output$num_der <- renderPlot({
       points <- selected_points() %>% filter(dataset == "lens")
       plot_num_der(
+
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
@@ -47,7 +51,9 @@ server <- function(input, output) {
         # selected_points()$max_lat[2],
         # selected_points()$min_lon[2] %% 360,
         # selected_points()$max_lon[2] %% 360
-      )
+      )+
+        ggtitle(str_c("First selection: ",input$state))
+
     })
     
 
@@ -56,6 +62,7 @@ server <- function(input, output) {
     output$comp_sawtooth <- renderPlot({
       points <- selected_points_compare() %>% filter(dataset == "lens")
       plot_sawtooths(
+
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
@@ -66,7 +73,9 @@ server <- function(input, output) {
         # selected_points_compare()$min_lon[2] %% 360,
         # selected_points_compare()$max_lon[2] %% 360
         # )+
-        coord_cartesian(xlim=ranges_comp$x,ylim=ranges_comp$y,expand=FALSE)
+         coord_cartesian(xlim=ranges_comp$x,ylim=ranges_comp$y,expand=FALSE)+
+        ggtitle(str_c("Second selection: ",input$comparison_state))
+
     })
     
     # When a double-click happens, check if there's a brush on the plot.
@@ -89,7 +98,9 @@ server <- function(input, output) {
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
-        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
+        ggtitle(str_c("Second selection: ",input$comparison_state))
+
     })
 #######################################################################
     # # smither8
