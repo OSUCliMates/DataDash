@@ -246,32 +246,6 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                          )
                        )
               ),
-              
-              #tabPanel("Yearly - ",
-
-              #     tabPanel("Decadal Cumulative Precipitation",#stay cool chief
-                      #sliderInput("lat", label = h3("Latitude"), min = 24, 
-                      #                 max = 50, value = c(41,47)),
-                      #sliderInput("lon", label = h3("Longitude"), min = -125, 
-                      #                 max = -66, value = c(-125,-116)),
-                      
-        #              conditionalPanel(
-        #                condition  = "input.go == 0",
-        #                h3("Please select a location in the sidebar and click 'Go' ")
-        #              ),
-        #              conditionalPanel(
-        #                condition = "input.go != 0",
-                      
-        #              br(),
-        #              plotOutput("sawtooth"),
-        #              hr(),
-        #              conditionalPanel(
-        #                condition = "input.comparison_checkbox == true",
-        #                plotOutput("comp_sawtooth")
-        #              )
-        #              )
-        #              #plotOutput("ref_map")
-        #     ),
 
               tabPanel("Yearly Total, Cumulative, and By-Month Variability",
                        conditionalPanel(
@@ -280,36 +254,33 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        ),
                        conditionalPanel(
                          condition = "input.go != 0",
-                       titlePanel("Precipitation Time Series: Total, Accumulation, and Variation"),
-                       
+                       titlePanel("Total, Cumulative, and By-Month Variability of Precipitation"),
+                       tags$h4("The plots in this tab were created using the ERA-Interim dataset to display the behavior of precipitation in your area of
+                               interest in with three measurements."),
 
-
-                       # sidebarLayout(
-                       #   sidebarPanel(
-                       #     # Slider for range of years
-                       #     div(style="font-size:20px;",
-                       #         sliderInput(inputId = "Year", label="Years of interest",
-                       #                     min=1979, max=2017, value=c(1979, 1985), sep=""))
-                       #   ),
-                       #   mainPanel(
-                       #     tags$h3("ERA Interim Station Locations"), 
-                       #     plotOutput(outputId = "mPlot", brush="selection1", width="80%")
-                       #   )),
-
-                       # Slider for range of years
-                       div(style="font-size:20px;",
-                           sliderInput(inputId = "Year", label="Years of interest",
+                       div(style="font-size:15px;",
+                           sliderInput(inputId = "Year", label="Select a range of years to explore",
                                        min=1979, max=2017, value=c(1979, 1985), sep="")),
 
+                       
                        tags$h3("Total yearly precipitation"),
+                       p("For a given year and location boundary (or boundaries) of your choice, the total yearly precipitation is calculated for all 
+                       ERA map locations and then averaged. Note that the measurement of rainfall in the ERA dataset is a volume flux of precipitation rather than
+                       a volume of fallen precipitation."),
+                       p("Do you remember a significantly rainy or snowy year where you've lived?"),
                        withSpinner(plotOutput(outputId = "TotPlot")),
                        
                        tags$h3("Cumulative yearly precipitation"),
+                       p("In this plot, you'll see the cumulative precipitation for your location(s) of interest. Similarly to the plot above, the cumulative precipitation
+                         for all of the ERA location points in the boundary are averaged for each depicted year."),
+                       p("Are sharp increases in total precipitation in the above plot detectable in the slope of the cumulative precipitation?"),
                        withSpinner(plotOutput(outputId = "CumuPlot")),
                        
-                       tags$h3("Variability of total monthly precipitation by year"),
+                       tags$h3("Variability of monthly total precipitation by year"),
+                       p("This final plot allows you to explore the variability of precipitation by year. The monthly totals are taken similarly to the above plots and then the variance
+                         amongst the month totals for a given year are plotted."),
+                       p("Are wetter or drier years more variable?"),
                        withSpinner(plotOutput(outputId = "VarPlot"))
-                       #Jess put the stuff you're working on in here
                        )
               ),
               
