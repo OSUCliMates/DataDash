@@ -1,11 +1,6 @@
 # load relevant data frames
-<<<<<<< HEAD
 range_dat <- readRDS(file="Data/decade_member_range.rds")
-explain_range_dat <-readRDS(file="Data/explain_mem_ranges.rds")
-=======
-range_dat <- readRDS(file="Data/decade_member_ranges.rds")
 explain_range_dat <- readRDS(file="Data/explain_member_ranges.rds")
->>>>>>> a8fa0eab3506c25555cb0fe46cb2ba621b9a7154
 # hard coded viriris colors
 multiplot_colors <- scale_colour_manual(values = c("1" = "#042333ff",
                                                    "2" = "#13306dff",
@@ -61,7 +56,7 @@ plot_ranges_box <- function(lat_min,lat_max,lon_min,lon_max){
     summarise(avg_prec_range = mean(precip_range))%>%
     ungroup()
   ndat <- dat%>%
-    select(avg_prec_range)%>%
+    dplyr::select(avg_prec_range)%>%
     summarise(n=as.numeric(n()))
   # if statement to either plot or make error message
   if(ndat==0){err_plot}else{
@@ -100,13 +95,15 @@ plot_ranges_smooth <- function(lat_min,lat_max,lon_min,lon_max){
     summarise(avg_prec_range = mean(precip_range))%>%
     ungroup()
   ndat <- dat%>%
-    select(avg_prec_range)%>%
+    dplyr::select(avg_prec_range)%>%
     summarise(n=as.numeric(n()))
   # if statement to either plot or make error message
   if(ndat==0){err_plot}else{
-    dat %>%
+    p3 <- dat %>%
       ggplot(aes(x = day_of_yr, y=avg_prec_range, color=factor(decade)))+
       geom_smooth(se=FALSE) + 
+      geom_hline(yintercept = 0.6, size = 0.75)+
+      geom_hline(yintercept = 0.3, size =0.75)+
       theme_dd() + 
       multiplot_colors+
       multiplot_size+
@@ -123,48 +120,70 @@ plot_ranges_smooth <- function(lat_min,lat_max,lon_min,lon_max){
       labs(title = "Average Precipitation Range Between Ensemble Members",
            x = "\nDay of the Year",
            y = "Avg. Range (cm precipitation/day)\n")
+    p3 +annotate("text", x = 350, y = 0.55, label = "y=0.6")+
+      annotate("text", x = 350, y = 0.35, label = "y=0.3")
   }
 }
 
-# Explanation Plot
-get_ranges <- explain_range_dat %>%
+# Explanation Plots
+plot_range_explain_1 <- function(){
+  get_ranges <- explain_range_dat %>%
+    group_by(day_of_yr) %>%
+    summarise(precip_range = (max(PREC, na.rm=TRUE)-min(PREC,na.rm = TRUE)))
+  get_max <- explain_range_dat %>%
+    group_by(day_of_yr) %>%
+    summarise(maxmax = max(PREC, na.rm=TRUE))
+  get_min <- explain_range_dat %>%
+    group_by(day_of_yr) %>%
+    summarise(minmin = min(PREC,na.rm = TRUE))
+  p1 <- ggplot()+
+    geom_point(data=explain_range_dat, aes(x=day_of_yr, y=PREC, group=factor(mem)), alpha=0.5)+
+    geom_point(data=get_max, aes(x=day_of_yr, y=maxmax), color="red", size=3)+
+    geom_point(data=get_min, aes(x=day_of_yr, y=minmin), color="red", size=3)+
+    geom_line(data=explain_range_dat, aes(x=day_of_yr, y=PREC, group=factor(mem)), alpha=0.1)+
+    theme_dd()+
+    labs(title="Average Precipitation \n122°50'W, 44°76.440'N, January of the 1980's",
+         subtitle="Each black dot and it's connecting line represents an individual member of the ensemble model, with the minimum and maximum precipitation values for each day highlighted in red",
+         x = "\nDay of the Year",
+         y = "Average Precipitation (cm/day)\n")
+  p1}
+
+plot_range_explain_2 <- function(){
+  get_ranges <- explain_range_dat %>%
+    group_by(day_of_yr) %>%
+    summarise(precip_range = (max(PREC, na.rm=TRUE)-min(PREC,na.rm = TRUE)))
+  get_max <- explain_range_dat %>%
   group_by(day_of_yr) %>%
-  summarise(precip_range = (max(PREC, na.rm=TRUE)-min(PREC,na.rm = TRUE)))
-get_max <- explain_range_dat %>%
-  group_by(day_of_yr) %>%
-  summarise(maxmax = max(PREC, na.rm=TRUE))
-get_min <- explain_range_dat %>%
-  group_by(day_of_yr) %>%
-  summarise(minmin = min(PREC,na.rm = TRUE))
-  
-p1 <- ggplot()+
-  geom_point(data=explain_range_dat, aes(x=day_of_yr, y=PREC, group=factor(mem)), alpha=0.5)+
-  geom_point(data=get_max, aes(x=day_of_yr, y=maxmax), color="red", size=3)+
-  geom_point(data=get_min, aes(x=day_of_yr, y=minmin), color="red", size=3)+
-  geom_line(data=explain_range_dat, aes(x=day_of_yr, y=PREC, group=factor(mem)), alpha=0.1)+
-  theme_dd()+
-  labs(title="Average Precipitation \n122°50'W, 44°76.440'N, January of the 1980's",
-       subtitle="Each black dot and it's connecting line represents an individual member of the ensemble model, \nwith the minimum and maximum precipitation values for each day highlighted in red",
-       x = "\nDay of the Year",
-       y = "Average Precipitation (cm/day)\n")
-p2 <- ggplot(data=get_ranges,aes(x = day_of_yr, y=precip_range))+
-  geom_line(color="red")+
-  theme_dd()+
-  labs(title="Range of Member Average Precipitation Values
-       \n122°50'W, 44°76.440'N, January of the 1980's",
-       subtitle = "Note how the y-coordinates here match the coresponding magnitudes of the space between the red points above, for each day",
-       x = "\nDay of the Year",
-       y = "Range (cm precipitation/day)\n")
+    summarise(precip_range = (max(PREC, na.rm=TRUE)-min(PREC,na.rm = TRUE)))
+  get_max <- explain_range_dat %>%
+    group_by(day_of_yr) %>%
+    summarise(maxmax = max(PREC, na.rm=TRUE))
+  get_min <- explain_range_dat %>%
+    group_by(day_of_yr) %>%
+    summarise(minmin = min(PREC,na.rm = TRUE))
+  p2 <- ggplot(data=get_ranges,aes(x = day_of_yr, y=precip_range))+
+    geom_line(color="red")+
+    theme_dd()+
+    labs(title="Range of Member Average Precipitation Values\n122°50'W, 44°76.440'N, January of the 1980's",
+         subtitle = "Note how the y-coordinates here match the coresponding magnitudes of the space between the red points above, for each day",
+         x = "\nDay of the Year",
+         y = "Range (cm precipitation/day)\n")
+  p2}
 
+# #for testing
 
-
-# for testing
-
+latitudes <- c(17.43455, 18.37696, 19.31937, 20.26178, 21.20419, 22.14660, 23.08901, 24.03141, 24.97382, 25.91623, 26.85864, 27.80105, 28.74346, 29.68586,
+               30.62827, 31.57068, 32.51309, 33.45550, 34.39791, 35.34031, 36.28272, 37.22513, 38.16754, 39.10995, 40.05236, 40.99476, 41.93717, 42.87958,
+               43.82199, 44.76440, 45.70681, 46.64921, 47.59162,48.53403, 49.47644, 50.41885, 51.36126, 52.30366, 53.24607, 54.18848, 55.13089)
+longitudes <- c(223.75, 225.00, 226.25, 227.50, 228.75, 230.00, 231.25, 232.50, 233.75, 235.00, 236.25, 237.50, 238.75, 240.00, 241.25, 242.50, 243.75, 245.00,
+                246.25, 247.50, 248.75, 250.00, 251.25, 252.50, 253.75, 255.00, 256.25, 257.50, 258.75, 260.00, 261.25, 262.50, 263.75, 265.00, 266.25, 267.50,
+                268.75, 270.00, 271.25, 272.50, 273.75, 275.00, 276.25, 277.50, 278.75, 280.00, 281.25, 282.50, 283.75, 285.00, 286.25, 287.50, 288.75, 290.00,
+                291.25, 292.50, 293.75, 295.00, 296.25, 297.50, 298.75, 300.00, 301.25)
+members <- seq(1:42)
 lat_min <- latitudes[6]
 lat_max <- latitudes[8]
 lon_min <- longitudes[24]
 lon_max <- longitudes[26]
 plot_ranges_box(lat_min,lat_max,lon_min,lon_max)
 plot_ranges_smooth(lat_min,lat_max,lon_min,lon_max)
-
 summary(range_dat$precip_range)

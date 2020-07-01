@@ -142,36 +142,50 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                        ),
                        conditionalPanel(
                          condition = "input.go != 0",
-                       h3("A Look Into The CESM-LENS Ensemble Members"),
-                       p("The CESM-LENS data set comes from a large ensemble model.
-                       The goal is to be able to distinguish 
-                       between climate change and internal climate variability."),
-                       p("Here we attempt to highlight that distinction
-                         by investigating how different the model members are from each other over time. The data were
-                         first reduced by calculating average precipitation for each day of the year in groupings of decades.
-                         Then, the range of those values was calculated and used as a proxy for
-                         variability between members over time."),
-                         p("As you choose areas of interest you can see how
-                         those ranges increase and decrease during different parts of the year, and if they change in 
-                         different ways throughout different decades."),
-                       h4("Area #1"),
-                       withSpinner(
-                         plotOutput("ranges_smooth")),
-                       conditionalPanel(
-                         h4("Area #2"),
-                         condition = "input.comparison_checkbox == true",
-                         withSpinner(plotOutput("comp_ranges_smooth"))
-                       ),
+                         h3("A Look Into The CESM-LENS Ensemble Members"),
+                         h4("Area #1"),
+                         p("To zoom in, click and drag to select an area, then double click the selected area. To reset zoom, double click anywhere."),
+                         #withSpinner(
+                         plotOutput("ranges_smooth",
+                                    dblclick = "rs_dblclick",
+                                    brush = brushOpts(
+                                      id = "rs_brush",
+                                      resetOnNew = TRUE
+                                      )),
+                       conditionalPanel(condition =
+                                          "input.comparison_checkbox == true",
+                                        h4("Area #2"),
+                                        p("To zoom in, click and drag to select an area, then double click the selected area. To reset zoom, double click anywhere."),
+                                        #withSpinner(
+                                        plotOutput("comp_ranges_smooth",
+                                                   dblclick = "rs_comp_dblclick",
+                                                   brush = brushOpts(
+                                                     id = "rs_comp_brush",
+                                                     resetOnNew = TRUE))),#),
                        h4("Area #1 Boxplot"),
                        withSpinner(
                          plotOutput("ranges_box")),
                        conditionalPanel(
-                         h4("Area #2 Boxplot"),
                          condition = "input.comparison_checkbox == true",
-                         withSpinner(plotOutput("comp_ranges_box"))
-                       )
-                       )
-              ),
+                         h4("Area #2 Boxplot"),
+                         withSpinner(plotOutput("comp_ranges_box"))),
+                       br(),
+                       p("Note: The following section is not interactive and is merely an explanation and example of the previous plots"),
+                       h3("What does \"Model Variability\" and \"Ensemble Member\" mean here?"),
+                       p("See the following plot. It contains average precipitaion values for all 42 members at one specific observation station (122°50'W, 44°76.440'N), for the month of January in the 1980s. The exact values are plotted as points, with darker points indicating overlapping values. The lines connecting points  follow each individual member across the entire plot."),
+                       br(),
+                       plotOutput("plot_range_explain_a"),
+                       br(),
+                       p("Here we attempt to highlight that distinction by investigating how different  the model members are from each other over time. The data were first reduced by calculating average precipitation for each day of the year in groupings of decades. Then, the range of those values was calculated and used as a proxy for variability between members over time."),
+                       p("As you choose areas of interest you can see how those ranges increase and decrease during different parts of the year, and if they change in different ways throughout different decades."),
+                       p("Notice how messy the lines and black points are! When you consider the sheer size of this data (42 members, 31025 days, 41 latitudes, and 63 longitudes), it's no wonder that it looks so noisy."),
+                       p("To reduce the data to something manageable for plotting (and more importantly, understanding), the range will act as a proxy for variability. Note that the maximum and minimum values are denoted with red points. In the next plot, the  range itself is on the y-axis. You can see that the values for each day match up with the vertical space between the red points above."),
+                       br(),
+                       plotOutput("plot_range_explain_b"),
+                       br(),
+                       p("In the interactive plots above you're looking at summaries of these ranges."),
+                       p("The boxplot combines these values for range for each day of each entire decade. The idea here is to get some intuition as to the distribution of ranges for each decade.")
+                       )),
 
               
               #########
@@ -309,17 +323,17 @@ ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinythe
                       (wetter = green,  drier = brown) . We often see drier periods lasting longer than a season -
                       and these can often be seen in different locations. Often we see periods of
                          drought that are evident in the entire US as well."),
-                       withSpinner(plotOutput(outputId = "precip_strips"))),
+                       withSpinner(plotOutput(outputId = "precip_strips")))
                        
                        
               )
   )
-
     )
-  )
+                   )
+                 )
+                 )
 )
 
-)
-)
+
 
 
