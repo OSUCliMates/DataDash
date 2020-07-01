@@ -53,7 +53,7 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                                   'CESM-LENS'),
                               h4("CESM Large Ensemble Community Project (CESM-LENS)"),
                               p("The CESM-LENS dataset consists of climate model simulations created by the Community Earth System Model Large Ensemble Community Project and supercomputing 
-                                resources provided by NSF/CISL/Yellowstone, and led by Dr. Clara Deser and Dr. Jennifer Kay. (Kay et al. 2005). The data are an ensemble model with 40 members. 
+                                resources provided by NSF/CISL/Yellowstone, and led by Dr. Clara Deser and Dr. Jennifer Kay. (Kay et al. 2005). The data are an ensemble model. 
                                 Each member has a slightly different initial atmospheric state, but uses the same model and undergoes the same radiative forcing scenario."),
                               
                               h4("ERA-Interim"),
@@ -182,13 +182,13 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                        br(),
                        p("Note: The following section is not interactive and is merely an explanation and example of the previous plots"),
                        h3("What does \"Model Variability\" and \"Ensemble Member\" mean here?"),
-                       p("See the following plot. It contains average precipitation values for all 42 members at one specific observation station (122°50'W, 44°76.440'N), for the month of January in the 1980s. The exact values are plotted as points, with darker points indicating overlapping values. The lines connecting points  follow each individual member across the entire plot."),
+                       p("See the following plot. It contains average precipitation values for all the members at one specific observation station (122°50'W, 44°76.440'N), for the month of January in the 1980s. The exact values are plotted as points, with darker points indicating overlapping values. The lines connecting points  follow each individual member across the entire plot."),
                        br(),
                        plotOutput("plot_range_explain_a"),
                        br(),
                        p("Here we attempt to highlight that distinction by investigating how different  the model members are from each other over time. The data were first reduced by calculating average precipitation for each day of the year in groupings of decades. Then, the range of those values was calculated and used as a proxy for variability between members over time."),
                        p("As you choose areas of interest you can see how those ranges increase and decrease during different parts of the year, and if they change in different ways throughout different decades."),
-                       p("Notice how messy the lines and black points are! When you consider the sheer size of this data (42 members, 31025 days, 41 latitudes, and 63 longitudes), it's no wonder that it looks so noisy."),
+                       p("Notice how messy the lines and black points are! When you consider the sheer size of this data (40 members, 31025 days, 41 latitudes, and 63 longitudes), it's no wonder that it looks so noisy."),
                        p("To reduce the data to something manageable for plotting (and more importantly, understanding), the range will act as a proxy for variability. Note that the maximum and minimum values are denoted with red points. In the next plot, the  range itself is on the y-axis. You can see that the values for each day match up with the vertical space between the red points above."),
                        br(),
                        plotOutput("plot_range_explain_b"),
