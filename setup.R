@@ -21,7 +21,11 @@ BigDF <- readRDS("Data/allUSShiny.rds") %>%
   rename(lon = lon2)
 
 #setup for range plot
+
+explain_range_dat <- readRDS(file="Data/explain_member_ranges.rds")
+
 range_dat <- readRDS(file="Data/dec_mem_range.rds")
+
 
 # PRECIPITATION DEVIATION FROM AVERAGE
 # Code to calculate this dataset found in era_precip_deviation.R in Examples folder in CliMates
@@ -47,17 +51,17 @@ nderiv <- function(x){
 # theme
 theme_dd <-  function () {theme(
   #plot.background = element_rect(fill = "transparent", color=NA),
-                                plot.background = element_rect(fill = "darkgray"),
-                                panel.grid.major.y = element_line(color = "grey90"),
-                                panel.grid.major.x = element_line(color = "grey90"),
-                                #plot.margin = unit(c(1, 1.5, 1, 1), "cm"),
-                                plot.title = element_text(size = 20, face="bold", hjust = 0.5, vjust = 0.5),
-                                axis.text = element_text(size = 12, face = "bold"),
-                                #axis.title = element_text(size = 16),
-                                panel.background= element_rect(fill = "white"),
-                                #panel.background = element_rect(fill = "transparent",colour = NA),
-                                panel.border = element_rect(colour = "black", fill=NA, size=2),
-                                legend.background = element_rect(fill = "white"),
-                                legend.text = element_text(size = 12),
-                                legend.title = element_text(size=16)
-                                )}
+  plot.background = element_rect(fill = "darkgray"),
+  panel.grid.major.y = element_line(color = "grey90"),
+  panel.grid.major.x = element_line(color = "grey90"),
+  #plot.margin = unit(c(1, 1.5, 1, 1), "cm"),
+  plot.title = element_text(size = 20, face="bold", hjust = 0.5, vjust = 0.5),
+  axis.text = element_text(size = 12, face = "bold"),
+  #axis.title = element_text(size = 16),
+  panel.background= element_rect(fill = "white"),
+  #panel.background = element_rect(fill = "transparent",colour = NA),
+  panel.border = element_rect(colour = "black", fill=NA, size=2),
+  legend.background = element_rect(fill = "white"),
+  legend.text = element_text(size = 12),
+  legend.title = element_text(size=16)
+)}

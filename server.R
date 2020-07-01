@@ -102,26 +102,59 @@ server <- function(input, output) {
         ggtitle(str_c("Second selection: ",input$comparison_state))
 
     })
-#######################################################################
-    # # smither8
+##################################################################################smither8### V
+
+    rs <- reactiveValues(x=NULL, y=NULL)
+    rs_comp <- reactiveValues(x=NULL, y=NULL)
+    
     output$ranges_smooth <- renderPlot({ 
       points <- selected_points() %>% filter(dataset == "lens")
-      plot_ranges_smooth(
+      p <- plot_ranges_smooth(
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
         ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+      p + coord_cartesian(xlim=rs$x,ylim=rs$y,expand=FALSE)
+    })
+    
+    #When a double-click happens, check if there's a brush on the plot.
+    #If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$rs_dblclick, {
+      rsbrush1 <- input$rs_brush
+      if (!is.null(rsbrush1)) {
+        rs$x <- c(rsbrush1$xmin, rsbrush1$xmax)
+        rs$y <- c(rsbrush1$ymin, rsbrush1$ymax)
+
+      } else {
+        rs$x <- NULL
+        rs$y <- NULL
+      }
     })
     
     output$comp_ranges_smooth <- renderPlot({ 
       points <- selected_points_compare() %>% filter(dataset == "lens")
-      plot_ranges_smooth(
+      pplot <- plot_ranges_smooth(
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
         ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+      pplot + coord_cartesian(xlim=rs_comp$x,ylim=rs_comp$y,expand=FALSE)
     }
     )
+    
+    # When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$rs_comp_dblclick, {
+      rsbrush1 <- input$rs_comp_brush
+      if (!is.null(rsbrush1)) {
+        rs_comp$x <- c(rsbrush1$xmin, rsbrush1$xmax)
+        rs_comp$y <- c(rsbrush1$ymin, rsbrush1$ymax)
+
+      } else {
+        rs_comp$x <- NULL
+        rs_comp$y <- NULL
+      }
+    })
     
     output$ranges_box <- renderPlot({ 
       points <- selected_points() %>% filter(dataset == "lens")
@@ -142,8 +175,17 @@ server <- function(input, output) {
     }
     )
     
+    output$plot_range_explain_a <- renderPlot({ 
+      plot_range_explain_1()
+    }
+    )
     
-#########################################################################    
+    output$plot_range_explain_b <- renderPlot({ 
+      plot_range_explain_2()
+    }
+    )
+    
+############################################################################smither8#### ^  
     ####################################################
     ## Sidebar selection maps 
     ####################################################
