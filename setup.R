@@ -11,8 +11,10 @@ library(shinythemes)
 #library(ggpubr)
 #library(shinyjs)
 
+
+
 #filenames
-#LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
+LENS_precfile <- "/home/ST505/CESM-LENS/historical/PREC.nc"
 
 #setup for reference plot
 us <- map_data("state")
@@ -20,18 +22,18 @@ BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds") %>%
   rename(lon = lon2)
 
 #setup for range plot
-range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
-explain_range_dat <- readRDS(file="/home/ST505/precalculated_data/explain_mem_ranges.rds")
+range_dat <- readRDS(file="Data/decade_member_ranges.rds")
+explain_range_dat <- readRDS(file="Data/explain_member_ranges.rds")
 
 # PRECIPITATION DEVIATION FROM AVERAGE
 # Code to calculate this dataset found in era_precip_deviation.R in Examples folder in CliMates
 # if using Months:
 #precip_deviation <- readRDS("/home/ST505/precalculated_data/era_precip_deviation.rds")
 # if using Quarters:
-precip_deviation <- readRDS("Data/era_precip_quarter_deviation.rds")
+precip_deviation <- readRDS("/home/ST505/precalculated_data/era_precip_quarter_deviation.rds")
 
 # read in list of ERA and CESM unique loation lat/long pairs - used for locaiton selection
-location_points <- read.csv("Data/lat_lon_pairs.csv")
+location_points <- read.csv("~/DataDash/Data/lat_lon_pairs.csv")
 
 #function for finding numeric derivative
 nderiv <- function(x){
