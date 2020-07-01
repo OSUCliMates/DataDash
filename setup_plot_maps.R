@@ -127,15 +127,16 @@ seasonal_precip_deviation <- function(data, compare = FALSE, empty = FALSE){
     pal <- c("grey")
   }
     data %>%
+      mutate(season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall"))) %>% 
         ggplot() +
         geom_hline(yintercept = 0,linetype = "dashed") +
         geom_line(aes(x = as.Date(quarter_date), y = avg_perc_dev,#y = mean_deviation,
                       group = data_choice,
                       color = data_choice),size = 1.5)+
         scale_x_date() +
-        scale_y_continuous(labels = scales::percent,n.breaks = 3) +
+        scale_y_continuous(labels = scales::percent, n.breaks = 3) +
         scale_color_manual(values = pal)+
-        facet_wrap(~factor(season,levels = c("Winter","Spring","Summer","Fall")),ncol = 1)+
+        facet_wrap(~season,ncol = 1)+
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
               plot.background = element_rect(fill = "transparent",colour = NA),
@@ -155,7 +156,7 @@ monthly_precip_deviation <- function(data){
                                       color = data_choice)) +
                         #fill = data_choice))+
         scale_x_date() +
-        scale_y_continuous(labels = scales::percent()) +#,n.breaks = 3) +
+        scale_y_continuous(labels = scales::percent()) +
         facet_wrap(~month) + 
         theme_dd() +
         theme(panel.background = element_rect(fill = "transparent",colour = NA),
