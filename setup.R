@@ -9,7 +9,7 @@ library(viridis)
 library(shinycssloaders)
 library(shinythemes)
 #library(ggpubr)
-library(shinyjs)
+#library(shinyjs)
 
 
 
@@ -23,6 +23,7 @@ BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds") %>%
 
 #setup for range plot
 range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
+explain_range_dat <- readRDS(file="/home/ST505/precalculated_data/explain_mem_ranges.rds")
 
 # PRECIPITATION DEVIATION FROM AVERAGE
 # Code to calculate this dataset found in era_precip_deviation.R in Examples folder in CliMates
