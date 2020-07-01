@@ -16,7 +16,7 @@ library(shinyjs)
 
 #setup for reference plot
 us <- map_data("state")
-BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds") %>%
+BigDF <- readRDS("Data/allUSShiny.rds") %>%
   rename(lon = lon2)
 
 #setup for range plot
