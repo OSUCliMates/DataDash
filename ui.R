@@ -152,36 +152,37 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                        conditionalPanel(
                          condition = "input.go != 0",
                          h3("A Look Into The CESM-LENS Ensemble Members"),
-                         h4("Area #1"),
+                         p("The CESM-LENS data are an ensemble model with 40 members. Each member has a slightly different initial atmospheric state, but uses the same model and undergoes the same radiative forcing scenario. The plots below explore variability between these members in different spatial areas. Scroll to: \"What does Model Variability and Ensemble Member mean here?\" for further explanation."),
+                         br(),
                          p("To zoom in, click and drag to select an area, then double click the selected area. To reset zoom, double click anywhere."),
-                         #withSpinner(
+                         withSpinner(
                          plotOutput("ranges_smooth",
                                     dblclick = "rs_dblclick",
                                     brush = brushOpts(
                                       id = "rs_brush",
                                       resetOnNew = TRUE
-                                      )),
+                                      ))),
+                         br(),
                        conditionalPanel(condition =
                                           "input.comparison_checkbox == true",
-                                        h4("Area #2"),
                                         p("To zoom in, click and drag to select an area, then double click the selected area. To reset zoom, double click anywhere."),
-                                        #withSpinner(
+                                        withSpinner(
                                         plotOutput("comp_ranges_smooth",
                                                    dblclick = "rs_comp_dblclick",
                                                    brush = brushOpts(
                                                      id = "rs_comp_brush",
-                                                     resetOnNew = TRUE))),#),
-                       h4("Area #1 Boxplot"),
+                                                     resetOnNew = TRUE)))),
+                       br(),
                        withSpinner(
                          plotOutput("ranges_box")),
+                       br(),
                        conditionalPanel(
                          condition = "input.comparison_checkbox == true",
-                         h4("Area #2 Boxplot"),
                          withSpinner(plotOutput("comp_ranges_box"))),
                        br(),
                        p("Note: The following section is not interactive and is merely an explanation and example of the previous plots"),
                        h3("What does \"Model Variability\" and \"Ensemble Member\" mean here?"),
-                       p("See the following plot. It contains average precipitaion values for all 42 members at one specific observation station (122°50'W, 44°76.440'N), for the month of January in the 1980s. The exact values are plotted as points, with darker points indicating overlapping values. The lines connecting points  follow each individual member across the entire plot."),
+                       p("See the following plot. It contains average precipitation values for all 42 members at one specific observation station (122°50'W, 44°76.440'N), for the month of January in the 1980s. The exact values are plotted as points, with darker points indicating overlapping values. The lines connecting points  follow each individual member across the entire plot."),
                        br(),
                        plotOutput("plot_range_explain_a"),
                        br(),
@@ -236,6 +237,7 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                          br(),
                          p("To zoom in, click and drag to select an area, then double click the selected area. 
                            To reset zoom, double click anywhere."),
+                         
                          plotOutput("sawtooth",
                                     dblclick = "sawtooth_dblclick",
                                     brush = brushOpts(
@@ -249,6 +251,7 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                            tend to be a bit noisy, but when looked at together, precipitation patterns emerge.
                            When is your area's \"rainy season\"?"),
                          p("(Plot does not zoom)"),
+                        
                          plotOutput("num_der"),
                          hr(),
                          conditionalPanel(
@@ -265,8 +268,8 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                            ),
                            h3("Decadal average rainfall"),
                            p("(Plot does not zoom)"),
-                           plotOutput("comp_num_der")
-                         )
+                           plotOutput("comp_num_der"))
+                         
                        )
               ),
 

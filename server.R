@@ -114,7 +114,8 @@ server <- function(input, output) {
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
         ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
-      p + coord_cartesian(xlim=rs$x,ylim=rs$y,expand=FALSE)
+      p + coord_cartesian(xlim=rs$x,ylim=rs$y,expand=FALSE)+
+      ggtitle(str_c("First selection: ",input$state))
     })
     
     #When a double-click happens, check if there's a brush on the plot.
@@ -138,7 +139,8 @@ server <- function(input, output) {
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
         ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
-      pplot + coord_cartesian(xlim=rs_comp$x,ylim=rs_comp$y,expand=FALSE)
+      pplot + coord_cartesian(xlim=rs_comp$x,ylim=rs_comp$y,expand=FALSE)+
+        ggtitle(str_c("First selection: ",input$state))
     }
     )
     
@@ -162,7 +164,8 @@ server <- function(input, output) {
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
-        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
+        ggtitle(str_c("First selection: ",input$state))
     })
     
     output$comp_ranges_box <- renderPlot({ 
@@ -171,7 +174,8 @@ server <- function(input, output) {
         ifelse(identical(points$min_lat,numeric(0)),0,points$min_lat), 
         ifelse(identical(points$max_lat,numeric(0)),0,points$max_lat),
         ifelse(identical(points$min_lon,numeric(0)),0,points$min_lon) %% 360,
-        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)
+        ifelse(identical(points$max_lon,numeric(0)),0,points$max_lon) %% 360)+
+        ggtitle(str_c("First selection: ",input$state))
     }
     )
     
