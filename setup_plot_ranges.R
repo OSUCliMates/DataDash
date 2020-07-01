@@ -1,6 +1,8 @@
 # load relevant data frames
-range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
-explain_range_dat <- readRDS(file="/home/ST505/precalculated_data/explain_mem_ranges.rds")
+# range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
+range_dat <- readRDS(file="Data/dec_mem_range.rds")
+# explain_range_dat <- readRDS(file="/home/ST505/precalculated_data/explain_mem_ranges.rds")
+explain_range_dat <- readRDS(file="Data/explain_mem_ranges.rds")
 # hard coded viriris colors
 multiplot_colors <- scale_colour_manual(values = c("1" = "#042333ff",
                                                    "2" = "#13306dff",
@@ -153,13 +155,13 @@ p2 <- ggplot(data=get_ranges,aes(x = day_of_yr, y=precip_range))+
 
 
 
-# for testing
-
-lat_min <- latitudes[6]
-lat_max <- latitudes[8]
-lon_min <- longitudes[24]
-lon_max <- longitudes[26]
-plot_ranges_box(lat_min,lat_max,lon_min,lon_max)
-plot_ranges_smooth(lat_min,lat_max,lon_min,lon_max)
-
-summary(range_dat$precip_range)
+# # for testing
+# 
+# lat_min <- latitudes[6]
+# lat_max <- latitudes[8]
+# lon_min <- longitudes[24]
+# lon_max <- longitudes[26]
+# plot_ranges_box(lat_min,lat_max,lon_min,lon_max)
+# plot_ranges_smooth(lat_min,lat_max,lon_min,lon_max)
+# 
+# summary(range_dat$precip_range)
