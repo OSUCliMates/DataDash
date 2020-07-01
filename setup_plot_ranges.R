@@ -1,6 +1,6 @@
 # load relevant data frames
-range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
-explain_range_dat <- readRDS(file="/home/ST505/precalculated_data/explain_mem_ranges.rds")
+range_dat <- readRDS(file="Data/decade_member_range.rds")
+explain_range_dat <-readRDS(file="Data/explain_mem_ranges.rds")
 # hard coded viriris colors
 multiplot_colors <- scale_colour_manual(values = c("1" = "#042333ff",
                                                    "2" = "#13306dff",

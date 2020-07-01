@@ -16,12 +16,12 @@ library(shinythemes)
 
 #setup for reference plot
 us <- map_data("state")
-BigDF <- readRDS("/home/ST505/precalculated_data/allUSShiny.rds") %>%
+BigDF <- readRDS("Data/allUSShiny.rds") %>%
   rename(lon = lon2)
 
 #setup for range plot
-range_dat <- readRDS(file="/home/ST505/precalculated_data/dec_mem_range.rds")
-explain_range_dat <- readRDS(file="/home/ST505/precalculated_data/explain_mem_ranges.rds")
+range_dat <- readRDS(file="Data/decade_member_range.rds")
+explain_range_dat <-readRDS(file="Data/explain_mem_ranges.rds")
 
 # PRECIPITATION DEVIATION FROM AVERAGE
 # Code to calculate this dataset found in era_precip_deviation.R in Examples folder in CliMates
