@@ -1,4 +1,5 @@
 #Attach Packages
+library(maps)
 library(shiny)
 library(tidyverse)
 library(tidync)
@@ -20,8 +21,11 @@ BigDF <- readRDS("Data/allUSShiny.rds") %>%
   rename(lon = lon2)
 
 #setup for range plot
-range_dat <- readRDS(file="Data/decade_member_range.rds")
+
 explain_range_dat <- readRDS(file="Data/explain_member_ranges.rds")
+
+range_dat <- readRDS(file="Data/dec_mem_range.rds")
+
 
 # PRECIPITATION DEVIATION FROM AVERAGE
 # Code to calculate this dataset found in era_precip_deviation.R in Examples folder in CliMates

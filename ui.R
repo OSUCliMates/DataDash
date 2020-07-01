@@ -16,59 +16,68 @@ source("setup_plot_ranges.R", local=FALSE)
 #       helpText("Drag a rectangle to select an area to examine, then click go"),
 #       selectInput(inputId = "state",
 
-ui <- navbarPage("CliMates Data Dashboard", collapsible = TRUE, theme = shinytheme("darkly"),
+ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, theme = shinytheme("darkly"),
                  tabPanel("Overview",
                           fluidPage(
                             mainPanel(
-                              h2("Welcome to the CliMates Data Dashboard!"),
-                              p("This is a part of the ASA ENVR Section Data Challenge 2020."),
-                              p("You can find our code and full report on our",
-                                a(href = 'https://github.com/OSUCliMates', 'github')," page"),
+                              h2("Welcome to the CliMates Precipitation Data Dashboard!"),
+                              p("This Shiny web application has been created as a submission to the American Statistical
+                                Association Environmental Section 2020 Data Challenge."),
+                              p("You can find our code on our",
+                                a(href = 'https://github.com/OSUCliMates', 'Github')," page and our full report ", 
+                                a(href = 'https://github.com/OSUCliMates', 'here'), "."),
+                              p("This tab gives a brief overview of the application, it's creators, and the materials used to make it."),
+                              p("In the next tab, you'll see an
+                                interactive and explorative tool for investigating precipitation in the United States using two large climate data sets. We hope it lets
+                                you bypass some of the initial drudgery of data cleaning and wrangling,
+                                and get a good look at the behaviors, trends, and patterns that are occurring. Have some fun! Play around. See if you can find anything 
+                                that surprises you."),
                               br(),
                               h3("About Us"),
-                              p("We are a team from Oregon State University, so it's no
+                              p("We are four Statistics M.S. students at Oregon State University with a mutual interest in climate data and statistics. By this friendship, the CliMates were formed."),
+                              p(strong("The CliMates: "), "Emily M. M. Palmer, Katherine R. Pulham, Jessica R. Robinson, Ericka B. Smith"),
+                              p("Our team consists of four students residing in the rainy state of Oregon, so it's no
                               surprise that we are interested
-                                in precipitation. If that's not your thing, have no fear! 
+                                in precipitation data. If that's not your thing, have no fear! 
                                 This data dashboard is a proof 
                                 of concept. There is a steep learning curve to examining large and 
                                 complex data sets, and 
                                 in the spirit of 2020, we'd like to flatten that curve."),
                               br(),
-                              p("In the next tab you'll see an
-                                interactive tool for investigating two large data sets. We hope it lets
-                                you bypass some of the initial drudgery of data cleaning and wrangling,
-                                and just get a good look 
-                                at the data. Have some fun! Play around. See if you can find anything 
-                                that surprises you."),
-                              br(),
-                              h3("About the datasets"),
-                              h5(" CESM Large Ensemble Community Project (CESM-LENS)"),
-                              p("We used two precipitation climate reanalysis datasets",
-                        a(href = 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim',
+
+                              h3("The Datasets"),
+                              p("We used two precipitation climate reanalysis datasets provided by the ENVR section: "),
+                                a(href = 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim',
                                   'ERA '), "and ",
                                 a(href = 'http://www.cesm.ucar.edu/projects/community-projects/LENS/',
                                   'CESM-LENS'),
-                                ". ERA has resolution of (fix this)km and CESM-LENS has resolution of ()km"),
+                              h4("CESM Large Ensemble Community Project (CESM-LENS)"),
+                              p("The CESM-LENS dataset consists of climate model simulations created by the Community Earth System Model Large Ensemble Community Project and supercomputing 
+                                resources provided by NSF/CISL/Yellowstone, and led by Dr. Clara Deser and Dr. Jennifer Kay. (Kay et al. 2005). The data are an ensemble model with 40 members. 
+                                Each member has a slightly different initial atmospheric state, but uses the same model and undergoes the same radiative forcing scenario."),
                               
-                              h5("ERA - Interim"),
-                              p("describe here :) "),
+                              h4("ERA-Interim"),
+                              p("The ERA-Interim dataset comes from a climate data reanalysis from the European Centre for Medium‐Range Weather Forecasts (ECMWF). 
+                                ERA-Interim is a global atmospheric reanalysis that tracks a large number of variables, including maximum temperature, minimum temperature, and precipitation from 1979 to 2017."),
                               br(),
+                        
+                              h3("Get Started"),
+                              p("To use this web application, you'll start by choosing a location of interest. You can do this by choosing a state from the dropdown menu and then toggling the zoom buttons to narrow your selection.
+                            You can then click and drag a box to select the location you'd like to explore. There is an option to repeat this process to compare two different locations as well."),
+                              p("Once this is chosen, you have four tabs to choose from, all hosting distinct exploratory tools."),
+                        
+                              br(),
+                              
                               h3("Acknowledgements"),
-                              p("advisors + data set creators + contest creators?
-                              do advisors go with About Us or are they not
-                              technically the team?")
+                              p("We'd like to thank our faculty advisors for their support in this endeavor: Lisa Ganio, James Molyneux, and Charlotte Wickham."),
+                              p("Additionally, thank you to the CESM Large Ensemble Community Project and the European Centre for Medium‐Range Weather Forecasts as well as the ASA ENVR Section for aggregating the
+                                data resources used in this effort."),
+                              p("And, thank you to CJ Keist at OSU CoSINe IT Services for setting up and overseeing the RStudio server. "),
+                              p("Thank you to the ASA Environmental Section for hosting this competition. The combination of R, Shiny, GitHub and large climate datasets used in this competition provided fun and 
+                                challenging means for us to learn important tools in our field.")
                               ),
-                            
-                            h3("App Overview - Insert a sort of simple 'How to' of using the app"),
-                            p("For this project, we chose to make a Shiny App (located in the `Shiny App` tab. 
-                            To use this app, select a state of interest, and then click and drag a box around 
-                            your location of interest. Once you have selected an area, click go."),
-                            p(" You can also click `Click here to make a comparison` to compare to a 
-                            different selected
-                            area.")
-                            )
-                          ),
-                 tabPanel("The Data",
+                          )),
+                 tabPanel("Explore the Data",
                  fluidPage(
                    sidebarLayout(
                      # Side bar for selection choices 
