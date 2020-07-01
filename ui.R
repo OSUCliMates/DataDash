@@ -26,7 +26,7 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                               p("You can find our code on our",
                                 a(href = 'https://github.com/OSUCliMates', 'Github')," page and our full report ", 
                                 a(href = 'https://github.com/OSUCliMates', 'here'), "."),
-                              p("This tab gives a brief overview about the application, it's creators, and the materials used to make it."),
+                              p("This tab gives a brief overview of the application, it's creators, and the materials used to make it."),
                               p("In the next tab, you'll see an
                                 interactive and explorative tool for investigating precipitation in the United States using two large climate data sets. We hope it lets
                                 you bypass some of the initial drudgery of data cleaning and wrangling,
@@ -77,7 +77,7 @@ ui <- navbarPage("CliMates Precipitation Data Dashboard", collapsible = TRUE, th
                                 challenging means for us to learn important tools in our field.")
                               ),
                           )),
-                 tabPanel("The Data",
+                 tabPanel("Explore the Data",
                  fluidPage(
                    sidebarLayout(
                      # Side bar for selection choices 
